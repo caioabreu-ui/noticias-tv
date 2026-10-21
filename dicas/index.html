@@ -6,7 +6,7 @@
 @font-face{font-family:"Shoulders";src:url(../assets/BigShoulders-Bold.ttf)}
 :root{--fundo:#FBF4E6;--tinta:#2A2622;--cinza:#6E665C;--linha:#E8DCC6;--branco:#FFFFFF;--cor:#7E3F92}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
 #tela{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--fundo);font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:var(--tinta)}
 /* fundo pontilhado de caderno */
 #tela::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#E3D4B8 2px,transparent 2px);background-size:36px 36px;opacity:.7}
@@ -100,9 +100,27 @@ var ICONES = {
 var lista = [], idx = -1, timer = null, t0 = 0;
 function $(id){ return document.getElementById(id); }
 function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
-function ajusta(){ var s = Math.min(window.innerWidth/1920, window.innerHeight/1080), t = $("tela");
-  t.style.transform = "scale(" + s + ")"; t.style.left = ((window.innerWidth-1920*s)/2) + "px"; t.style.top = ((window.innerHeight-1080*s)/2) + "px"; }
-window.onresize = ajusta; ajusta();
+function parametro(n){ var m = new RegExp("[?&]" + n + "=([^&]+)").exec(location.search); return m ? decodeURIComponent(m[1]) : null; }
+function ajusta(){
+  var ws = [window.innerWidth, document.documentElement.clientWidth, document.body ? document.body.clientWidth : 0, screen.width];
+  var hs = [window.innerHeight, document.documentElement.clientHeight, document.body ? document.body.clientHeight : 0, screen.height];
+  var W = 0, H = 0, k;
+  for (k = 0; k < ws.length; k++) if (ws[k] > 100 && (!W || ws[k] < W)) W = ws[k];
+  for (k = 0; k < hs.length; k++) if (hs[k] > 100 && (!H || hs[k] < H)) H = hs[k];
+  if (!W) W = 1920; if (!H) H = 1080;
+  var s = Math.min(W / 1920, H / 1080);
+  var forcado = parseFloat(parametro("escala")); if (forcado > 0) s = forcado;
+  var t = document.getElementById("tela"), tr = "scale(" + s + ")";
+  t.style.webkitTransform = tr; t.style.transform = tr;
+  t.style.webkitTransformOrigin = "0 0"; t.style.transformOrigin = "0 0";
+  t.style.left = Math.max(0, (W - 1920 * s) / 2) + "px"; t.style.top = Math.max(0, (H - 1080 * s) / 2) + "px";
+  if (parametro("debug")) {
+    var d = document.getElementById("dbg");
+    if (!d) { d = document.createElement("div"); d.id = "dbg"; d.style.cssText = "position:fixed;left:0;top:0;z-index:99;background:#ff0;color:#000;font:bold 22px Arial;padding:8px"; document.body.appendChild(d); }
+    d.innerHTML = "inner " + window.innerWidth + "x" + window.innerHeight + " | client " + document.documentElement.clientWidth + "x" + document.documentElement.clientHeight + " | screen " + screen.width + "x" + screen.height + " | dpr " + (window.devicePixelRatio || 1) + " | escala " + s.toFixed(3);
+  }
+}
+window.onresize = ajusta; ajusta(); setInterval(ajusta, 2000);
 /* sorteio estável por dia: muda as dicas a cada dia */
 function doDia(itens){
   var d = new Date(), semente = d.getFullYear()*1000 + Math.floor((d - new Date(d.getFullYear(),0,0))/864e5);

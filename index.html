@@ -6,7 +6,7 @@
 @font-face{font-family:"PlexSerif";src:url(assets/IBMPlexSerif-Bold.ttf)}
 :root{--papel:#F6F5F1;--tinta:#141518;--cinza:#5E6168;--linha:#DCDAD3;--verm:#D7262E;--branco:#FFFFFF}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
 #tela{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--papel);font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:var(--tinta)}
 /* topo */
 .top{position:absolute;left:0;right:0;top:0;height:120px;background:var(--tinta);color:var(--branco);display:flex;align-items:center;justify-content:space-between;padding:0 80px;z-index:5}
@@ -79,10 +79,27 @@ var RECARREGA = 10 * 60 * 1000;    // busca o feed de novo a cada 10 min
 
 var noticias = [], idx = -1, timer = null, t0 = 0;
 function $(id){ return document.getElementById(id); }
-function ajusta(){ var s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
-  var t = $("tela"); t.style.transform = "scale(" + s + ")";
-  t.style.left = ((window.innerWidth - 1920*s)/2) + "px"; t.style.top = ((window.innerHeight - 1080*s)/2) + "px"; }
-window.onresize = ajusta; ajusta();
+function parametro(n){ var m = new RegExp("[?&]" + n + "=([^&]+)").exec(location.search); return m ? decodeURIComponent(m[1]) : null; }
+function ajusta(){
+  var ws = [window.innerWidth, document.documentElement.clientWidth, document.body ? document.body.clientWidth : 0, screen.width];
+  var hs = [window.innerHeight, document.documentElement.clientHeight, document.body ? document.body.clientHeight : 0, screen.height];
+  var W = 0, H = 0, k;
+  for (k = 0; k < ws.length; k++) if (ws[k] > 100 && (!W || ws[k] < W)) W = ws[k];
+  for (k = 0; k < hs.length; k++) if (hs[k] > 100 && (!H || hs[k] < H)) H = hs[k];
+  if (!W) W = 1920; if (!H) H = 1080;
+  var s = Math.min(W / 1920, H / 1080);
+  var forcado = parseFloat(parametro("escala")); if (forcado > 0) s = forcado;
+  var t = document.getElementById("tela"), tr = "scale(" + s + ")";
+  t.style.webkitTransform = tr; t.style.transform = tr;
+  t.style.webkitTransformOrigin = "0 0"; t.style.transformOrigin = "0 0";
+  t.style.left = Math.max(0, (W - 1920 * s) / 2) + "px"; t.style.top = Math.max(0, (H - 1080 * s) / 2) + "px";
+  if (parametro("debug")) {
+    var d = document.getElementById("dbg");
+    if (!d) { d = document.createElement("div"); d.id = "dbg"; d.style.cssText = "position:fixed;left:0;top:0;z-index:99;background:#ff0;color:#000;font:bold 22px Arial;padding:8px"; document.body.appendChild(d); }
+    d.innerHTML = "inner " + window.innerWidth + "x" + window.innerHeight + " | client " + document.documentElement.clientWidth + "x" + document.documentElement.clientHeight + " | screen " + screen.width + "x" + screen.height + " | dpr " + (window.devicePixelRatio || 1) + " | escala " + s.toFixed(3);
+  }
+}
+window.onresize = ajusta; ajusta(); setInterval(ajusta, 2000);
 function dois(n){ return (n < 10 ? "0" : "") + n; }
 function relogio(){ var d = new Date(); var dias=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
   $("hora").innerHTML = dias[d.getDay()] + " " + dois(d.getDate()) + "/" + dois(d.getMonth()+1) + " · " + dois(d.getHours()) + ":" + dois(d.getMinutes()); }
