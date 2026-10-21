@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tempo · Ribeirão Preto</title>
+<style>
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
+*{box-sizing:border-box;margin:0;padding:0}
+#tela{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:#fff;background:#2B78C2;-webkit-transition:background 1.5s;transition:background 1.5s}
+#ceu{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#flash{position:absolute;left:0;top:0;right:0;bottom:0;background:#fff;opacity:0;pointer-events:none}
+/* sol */
+.sol{position:absolute;right:240px;top:170px;width:300px;height:300px;display:none}
+.sol .nucleo{position:absolute;left:60px;top:60px;width:180px;height:180px;border-radius:50%;background:#FFD54A;box-shadow:0 0 80px 30px rgba(255,213,74,.55)}
+.sol .raios{position:absolute;left:0;top:0;width:300px;height:300px;-webkit-animation:gira 30s linear infinite;animation:gira 30s linear infinite}
+.sol .raios i{position:absolute;left:142px;top:-20px;width:16px;height:70px;border-radius:999px;background:#FFE27A;-webkit-transform-origin:8px 170px;transform-origin:8px 170px}
+@-webkit-keyframes gira{to{-webkit-transform:rotate(360deg)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+.lua{position:absolute;right:300px;top:170px;width:200px;height:200px;border-radius:50%;box-shadow:-46px 22px 0 0 #F4F1E4;display:none;-webkit-transform:rotate(-20deg);transform:rotate(-20deg)}
+/* nuvens */
+.nuvem{position:absolute;opacity:.8;-webkit-animation:anda linear infinite;animation:anda linear infinite}
+.nuvem b{position:absolute;border-radius:50%;background:inherit}
+@-webkit-keyframes anda{from{-webkit-transform:translateX(-500px)}to{-webkit-transform:translateX(2300px)}}
+@keyframes anda{from{transform:translateX(-500px)}to{transform:translateX(2300px)}}
+/* conteúdo */
+.top{position:absolute;left:80px;right:80px;top:56px;height:70px;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:justify;justify-content:space-between;z-index:5}
+.local{font-weight:900;font-size:40px;letter-spacing:.02em;text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.local small{display:block;font-weight:600;font-size:22px;letter-spacing:.24em;text-transform:uppercase;opacity:.85;margin-top:4px}
+.hora{font-weight:800;font-size:56px;letter-spacing:.02em;text-shadow:0 2px 12px rgba(0,0,0,.25)}
+.agora{position:absolute;left:80px;top:300px;z-index:5}
+.temp{font-weight:900;font-size:300px;line-height:.85;letter-spacing:-.04em;text-shadow:0 6px 30px rgba(0,0,0,.25)}
+.temp sup{font-size:120px;vertical-align:top;position:relative;top:24px;margin-left:6px}
+.cond{margin-top:18px;font-weight:900;font-size:66px;text-shadow:0 2px 14px rgba(0,0,0,.25)}
+.sens{margin-top:10px;font-size:32px;font-weight:600;opacity:.92}
+.chips{margin-top:30px}
+.chip{display:inline-block;margin-right:14px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);border-radius:999px;padding:12px 26px;font-size:28px;font-weight:700}
+.chip b{font-weight:900}
+.dica{position:absolute;left:80px;top:900px;z-index:5;display:none;background:rgba(0,0,0,.28);border-radius:18px;padding:16px 26px;font-size:30px;font-weight:700}
+/* próximos dias */
+.dias{position:absolute;right:80px;bottom:120px;z-index:5;width:900px}
+.dias .t{font-weight:800;font-size:22px;letter-spacing:.24em;text-transform:uppercase;opacity:.9;margin-bottom:16px}
+.dias .linha{display:-webkit-box;display:flex}
+.dia{-webkit-box-flex:1;flex:1;margin-left:16px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);border-radius:28px;padding:22px 10px;text-align:center}
+.dia:first-child{margin-left:0}
+.dia .n{font-weight:900;font-size:28px;text-transform:uppercase}
+.dia .ic{height:84px;margin:8px 0}
+.dia .mx{font-weight:900;font-size:40px}
+.dia .mn{font-weight:600;font-size:28px;opacity:.8}
+.dia .ch{margin-top:6px;font-size:22px;font-weight:700;opacity:.9}
+.rodape{position:absolute;left:80px;right:80px;bottom:44px;z-index:5;display:-webkit-box;display:flex;-webkit-box-pack:justify;justify-content:space-between;-webkit-box-align:center;align-items:center;font-size:20px;font-weight:600;opacity:.85}
+.rodape img{height:40px;vertical-align:middle;margin-left:12px}
+.carregando{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:40px;font-weight:700;z-index:6}
+</style></head>
+<body>
+<div id="tela">
+  <canvas id="ceu" width="1920" height="1080"></canvas>
+  <div class="sol" id="sol"><div class="raios" id="raios"></div><div class="nucleo"></div></div>
+  <div class="lua" id="lua"></div>
+  <div id="nuvens"></div>
+  <div id="flash"></div>
+  <div class="top"><div class="local">Ribeirão Preto<small>Previsão do tempo</small></div><div class="hora" id="hora">--:--</div></div>
+  <div class="agora">
+    <div class="temp"><span id="temp">--</span><sup>°C</sup></div>
+    <div class="cond" id="cond"></div>
+    <div class="sens" id="sens"></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <div class="dica" id="dica"></div>
+  <div class="dias"><div class="t">Próximos dias</div><div class="linha" id="dias"></div></div>
+  <div class="rodape"><span id="upd">Dados: Open-Meteo</span><span>Curadoria<img src="../assets/logo_light.png" alt="IBFE"></span></div>
+  <div class="carregando" id="carregando">Carregando previsão…</div>
+</div>
+<script>
+var LAT = -21.1775, LON = -47.8103;
+var API = "https://api.open-meteo.com/v1/forecast?latitude=" + LAT + "&longitude=" + LON +
+  "&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m" +
+  "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FSao_Paulo&forecast_days=5";
+function $(id){ return document.getElementById(id); }
+function parametro(n){ var m = new RegExp("[?&]" + n + "=([^&]+)").exec(location.search); return m ? decodeURIComponent(m[1]) : null; }
+
+/* ---------- ajuste de tamanho (mesmo das outras telas) ---------- */
+function ajusta(){
+  var ws=[window.innerWidth,document.documentElement.clientWidth,screen.width], hs=[window.innerHeight,document.documentElement.clientHeight,screen.height], W=0,H=0,k;
+  for(k=0;k<ws.length;k++) if(ws[k]>100&&(!W||ws[k]<W)) W=ws[k];
+  for(k=0;k<hs.length;k++) if(hs[k]>100&&(!H||hs[k]<H)) H=hs[k];
+  if(!W)W=1920; if(!H)H=1080;
+  var s=Math.min(W/1920,H/1080), f=parseFloat(parametro("escala")); if(f>0)s=f;
+  var t=$("tela"), tr="scale("+s+")"; t.style.webkitTransform=tr; t.style.transform=tr; t.style.webkitTransformOrigin="0 0"; t.style.transformOrigin="0 0";
+  t.style.left=Math.max(0,(W-1920*s)/2)+"px"; t.style.top=Math.max(0,(H-1080*s)/2)+"px";
+}
+window.onresize=ajusta; ajusta(); setInterval(ajusta,2000);
+function dois(n){ return (n<10?"0":"")+n; }
+function relogio(){ var d=new Date(); $("hora").innerHTML=dois(d.getHours())+":"+dois(d.getMinutes()); }
+setInterval(relogio,10000); relogio();
+
+/* ---------- códigos de tempo (OMS) ---------- */
+function tipo(code){
+  if (code===0) return "limpo";
+  if (code<=2) return "poucas";
+  if (code===3) return "nublado";
+  if (code===45||code===48) return "neblina";
+  if (code>=95) return "tempestade";
+  if ((code>=51&&code<=67)||(code>=80&&code<=82)) return code>=63&&code!==80?"chuvaforte":"chuva";
+  return "nublado";
+}
+var NOMES={limpo:"Céu limpo",poucas:"Poucas nuvens",nublado:"Nublado",neblina:"Neblina",chuva:"Chuva",chuvaforte:"Chuva forte",tempestade:"Tempestade"};
+var SVG_SOL='<circle cx="32" cy="32" r="12" fill="#FFD54A"/><g stroke="#FFD54A" stroke-width="4" stroke-linecap="round"><path d="M32 6v8M32 50v8M6 32h8M50 32h8M13.6 13.6l5.7 5.7M44.7 44.7l5.7 5.7M13.6 50.4l5.7-5.7M44.7 19.3l5.7-5.7"/></g>';
+var SVG_NUV='<path d="M18 48h28a10 10 0 0 0 0-20 14 14 0 0 0-27-3A11 11 0 0 0 18 48z" fill="#fff"/>';
+var SVG_GOTAS='<g stroke="#9FD3FF" stroke-width="4" stroke-linecap="round"><path d="M22 52l-3 7M32 52l-3 7M42 52l-3 7"/></g>';
+function ic(inner){ return '<svg width="84" height="84" viewBox="0 0 64 64">'+inner+'</svg>'; }
+var ICONE={limpo:ic(SVG_SOL),
+ poucas:ic('<g transform="translate(8,-6) scale(.8)">'+SVG_SOL+'</g>'+SVG_NUV),
+ nublado:ic(SVG_NUV),
+ neblina:ic(SVG_NUV+'<g stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"><path d="M12 55h40M18 61h28"/></g>'),
+ chuva:ic('<g transform="translate(0,-6)">'+SVG_NUV+'</g>'+SVG_GOTAS),
+ chuvaforte:ic('<g transform="translate(0,-6)">'+SVG_NUV+'</g>'+SVG_GOTAS+'<g stroke="#9FD3FF" stroke-width="4" stroke-linecap="round"><path d="M27 46l-3 7M37 46l-3 7"/></g>'),
+ tempestade:ic('<g transform="translate(0,-6)">'+SVG_NUV+'</g><path d="M34 44l-8 11h7l-4 9 11-13h-7l4-7z" fill="#FFD54A"/>')};
+var SEMANA=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
+/* ---------- cenário animado ---------- */
+var cv=$("ceu"), ctx=cv.getContext("2d"), part=[], modo="", raioT=0;
+(function(){ var r=$("raios"),h=""; for(var i=0;i<12;i++) h+='<i style="-webkit-transform:rotate('+(i*30)+'deg);transform:rotate('+(i*30)+'deg)"></i>'; r.innerHTML=h; })();
+function nuvens(qtd, cor, escuro){
+  var h=""; for(var i=0;i<qtd;i++){
+    var w=200+Math.random()*180, top=150+Math.random()*50, dur=60+Math.random()*80, atraso=-Math.random()*dur, c=escuro?cor:cor;
+    h+='<div class="nuvem" style="top:'+top+'px;width:'+w+'px;height:'+(w*.42)+'px;background:'+c+';border-radius:999px;-webkit-animation-duration:'+dur+'s;animation-duration:'+dur+'s;-webkit-animation-delay:'+atraso+'s;animation-delay:'+atraso+'s">'+
+       '<b style="left:'+(w*.18)+'px;top:'+(-w*.18)+'px;width:'+(w*.4)+'px;height:'+(w*.4)+'px"></b><b style="left:'+(w*.42)+'px;top:'+(-w*.26)+'px;width:'+(w*.46)+'px;height:'+(w*.46)+'px"></b></div>';
+  }
+  $("nuvens").innerHTML=h;
+}
+function cena(t, dia, temp){
+  var fundo, sol=false, lua=false, nv=0, corN="rgba(255,255,255,.9)", chuva=0, estrelas=false, calor=false;
+  if (!dia){ fundo="linear-gradient(#0B1530,#1E2F5C 70%,#33447A)"; lua=(t==="limpo"||t==="poucas"); estrelas=lua; }
+  if (t==="limpo"||t==="poucas"){ if(dia){ calor=temp>=32; fundo=calor?"linear-gradient(#F07B2C,#F7A33B 55%,#FFD36E)":"linear-gradient(#1E7CD6,#4FA3E8 60%,#9CD2F5)"; sol=true; } nv=t==="poucas"?4:0; }
+  if (t==="nublado"||t==="neblina"){ fundo=dia?"linear-gradient(#6E8299,#93A4B6 60%,#B8C4D0)":"linear-gradient(#1B2333,#2E3A4E)"; nv=9; corN=dia?"rgba(236,240,245,.95)":"rgba(90,104,128,.95)"; }
+  if (t==="chuva"){ fundo=dia?"linear-gradient(#4E6177,#6B7F95 60%,#8B9CAE)":"linear-gradient(#141B28,#263246)"; nv=8; corN=dia?"rgba(200,210,222,.95)":"rgba(70,84,106,.95)"; chuva=160; }
+  if (t==="chuvaforte"){ fundo="linear-gradient(#2E3B4C,#465769 60%,#5E6F81)"; nv=10; corN="rgba(150,164,182,.95)"; chuva=320; }
+  if (t==="tempestade"){ fundo="linear-gradient(#1A2130,#2D3747 60%,#3F4A5C)"; nv=11; corN="rgba(96,108,128,.97)"; chuva=380; raioT=1; } else raioT=0;
+  $("tela").style.background=fundo;
+  $("sol").style.display=sol?"block":"none"; $("lua").style.display=lua?"block":"none";
+  nuvens(nv,corN);
+  part=[]; modo=chuva?"chuva":(estrelas?"estrelas":(calor?"calor":""));
+  var n=chuva||(estrelas?140:(calor?70:0));
+  for(var i=0;i<n;i++) part.push({x:Math.random()*1920,y:Math.random()*1080,v:modo==="chuva"?(18+Math.random()*14):(0.4+Math.random()*0.8),l:modo==="chuva"?(18+Math.random()*22):(1+Math.random()*2.5),a:Math.random()});
+}
+function anima(){
+  ctx.clearRect(0,0,1920,1080);
+  if (modo==="chuva"){ ctx.strokeStyle="rgba(220,235,255,.55)"; ctx.lineWidth=2.4; ctx.beginPath();
+    for(var i=0;i<part.length;i++){ var p=part[i]; ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.l*.25,p.y+p.l); p.y+=p.v; p.x-=p.v*.25; if(p.y>1080){p.y=-40;p.x=Math.random()*2100;} }
+    ctx.stroke(); }
+  else if (modo==="estrelas"){ for(var j=0;j<part.length;j++){ var e=part[j]; e.a+=0.02; ctx.fillStyle="rgba(255,255,255,"+(0.35+0.65*Math.abs(Math.sin(e.a)))+")"; ctx.fillRect(e.x,e.y*0.75,e.l,e.l); } }
+  else if (modo==="calor"){ for(var k=0;k<part.length;k++){ var c=part[k]; c.y-=c.v; c.a+=0.03; if(c.y<0){c.y=1080;c.x=Math.random()*1920;} ctx.fillStyle="rgba(255,240,200,"+(0.12+0.12*Math.sin(c.a))+")"; ctx.beginPath(); ctx.arc(c.x+Math.sin(c.a)*20,c.y,c.l*6,0,6.28); ctx.fill(); } }
+  if (raioT && Math.random()<0.006) relampago();
+  (window.requestAnimationFrame||window.webkitRequestAnimationFrame||function(f){setTimeout(f,33);})(anima);
+}
+function relampago(){ var f=$("flash"); f.style.opacity=.85; setTimeout(function(){f.style.opacity=0;},80); setTimeout(function(){f.style.opacity=.6;},160); setTimeout(function(){f.style.opacity=0;},240); }
+anima();
+
+/* ---------- dados ---------- */
+function dica(t,temp,umid){
+  if (t==="tempestade") return "Tempestade: evite áreas abertas e fique em local seguro.";
+  if (t==="chuva"||t==="chuvaforte") return "Não esqueça o guarda-chuva e dirija com cuidado.";
+  if (temp>=32) return "Dia quente: beba bastante água e evite o sol forte.";
+  if (umid<30) return "Ar seco: hidrate-se e use soro nos olhos e nariz.";
+  if (temp<=15) return "Dia frio: leve um agasalho.";
+  return "";
+}
+function pinta(j){
+  var c=j.current, d=j.daily, t=tipo(c.weather_code), forc=parametro("cena");
+  if (forc){ t=forc==="calor"?"limpo":forc; if(forc==="calor") c.temperature_2m=35; if(forc==="noite") {t="limpo"; c.is_day=0;} }
+  cena(t, c.is_day===1||c.is_day===true, c.temperature_2m);
+  $("carregando").style.display="none";
+  $("temp").innerHTML=Math.round(c.temperature_2m);
+  $("cond").innerHTML=(t==="limpo"&&c.temperature_2m>=32&&c.is_day)?"Muito calor":NOMES[t];
+  $("sens").innerHTML="Sensação térmica de "+Math.round(c.apparent_temperature)+"°C";
+  $("chips").innerHTML='<span class="chip">Umidade <b>'+Math.round(c.relative_humidity_2m)+'%</b></span>'+
+    '<span class="chip">Vento <b>'+Math.round(c.wind_speed_10m)+' km/h</b></span>'+
+    '<span class="chip">Mín <b>'+Math.round(d.temperature_2m_min[0])+'°</b> · Máx <b>'+Math.round(d.temperature_2m_max[0])+'°</b></span>';
+  var di=dica(t,c.temperature_2m,c.relative_humidity_2m); $("dica").style.display=di?"block":"none"; $("dica").innerHTML=di;
+  var h=""; for(var i=1;i<d.time.length&&i<5;i++){ var p=d.time[i].split("-"), dt=new Date(+p[0],+p[1]-1,+p[2]), tt=tipo(d.weather_code[i]);
+    h+='<div class="dia"><div class="n">'+SEMANA[dt.getDay()]+'</div><div class="ic">'+ICONE[tt]+'</div><div class="mx">'+Math.round(d.temperature_2m_max[i])+'°</div><div class="mn">'+Math.round(d.temperature_2m_min[i])+'°</div><div class="ch">Chuva '+(d.precipitation_probability_max[i]||0)+'%</div></div>'; }
+  $("dias").innerHTML=h;
+  var u=new Date(); $("upd").innerHTML="Atualizado às "+dois(u.getHours())+":"+dois(u.getMinutes())+" · Dados: Open-Meteo";
+}
+function carrega(){
+  var x=new XMLHttpRequest(); x.open("GET",API,true);
+  x.onload=function(){ try{ var j=JSON.parse(x.responseText); if(j.current){ pinta(j); try{localStorage.setItem("ibfe_tempo",x.responseText);}catch(e){} } }catch(e){} };
+  x.onerror=function(){ try{ var s=localStorage.getItem("ibfe_tempo"); if(s) pinta(JSON.parse(s)); }catch(e){} };
+  x.send();
+}
+if (parametro("teste")) { pinta({current:{temperature_2m:28,relative_humidity_2m:45,apparent_temperature:30,is_day:1,weather_code:1,wind_speed_10m:9},daily:{time:["2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25"],weather_code:[1,3,61,95,0],temperature_2m_max:[31,29,25,24,30],temperature_2m_min:[19,19,18,17,18],precipitation_probability_max:[5,20,70,90,0]}}); }
+else { carrega(); setInterval(carrega, 15*60*1000); }
+</script>
+</body></html>
