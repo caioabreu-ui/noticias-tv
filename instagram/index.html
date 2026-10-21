@@ -141,4 +141,12 @@ function carrega(){ var x=new XMLHttpRequest(); x.open("GET","post.json?t="+new 
   x.onload=function(){ try{ pinta(JSON.parse(x.responseText)); }catch(e){} }; x.send(); }
 carrega(); setInterval(carrega, 15*60*1000);
 </script>
+<script>
+/* auto-atualização: recarrega a página quando houver versão nova publicada */
+(function(){ var atual=null, base=location.pathname.replace(/[^\/]*$/,"");
+  var raiz=base.replace(/(dicas|tempo|instagram)\/$/,"");
+  function checa(){ var x=new XMLHttpRequest(); x.open("GET",raiz+"versao.txt?t="+new Date().getTime(),true);
+    x.onload=function(){ var v=(x.responseText||"").trim(); if(!v) return; if(atual===null) atual=v; else if(v!==atual) location.reload(true); }; x.send(); }
+  checa(); setInterval(checa, 10*60*1000); })();
+</script>
 </body></html>
