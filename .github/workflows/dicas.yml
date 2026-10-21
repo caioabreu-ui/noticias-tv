@@ -21,7 +21,8 @@ jobs:
         run: |
           git config user.name "robo-tv-ibfe"
           git config user.email "robo@users.noreply.github.com"
-          git pull --rebase
           git add dicas/dicas_saida.json
-          git diff --cached --quiet || git commit -m "Dicas verificadas"
+          git diff --cached --quiet && exit 0
+          git commit -m "Dicas verificadas"
+          git pull --rebase -X ours origin main
           git push
