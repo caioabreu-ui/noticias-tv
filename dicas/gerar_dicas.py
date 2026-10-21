@@ -41,9 +41,9 @@ def captura(url, destino):
             pg = b.new_page(viewport={"width": 1280, "height": 720}, locale="pt-BR", user_agent=UA["User-Agent"])
             resp = pg.goto(url, wait_until="networkidle", timeout=45000)
             pg.wait_for_timeout(2500)
-            titulo = (pg.title() or "").lower()
+            titulo = (pg.title() or "").lower() + " " + (pg.inner_text("body")[:1500] or "").lower()
             ruim = (resp is None or resp.status >= 400 or
-                    any(k in titulo for k in ("just a moment", "access denied", "attention required", "forbidden", "erro", "error")))
+                    any(k in titulo for k in ("just a moment", "access denied", "attention required", "forbidden", "manutenção", "maintenance", "página não encontrada", "404")))
             if not ruim:
                 pg.screenshot(path=str(destino), type="jpeg", quality=70)
             b.close()
@@ -51,6 +51,10 @@ def captura(url, destino):
     except Exception as ex:
         print("captura falhou", url, ex); return False
 (base / "img").mkdir(exist_ok=True)
+try:
+    anterior = {d["nome"]: d.get("imagem") for d in json.load(open(base / "dicas_saida.json", encoding="utf-8"))["dicas"]}
+except Exception:
+    anterior = {}
 for i in itens:
     estado, pagina, final = abre(i["link"])
     if estado != "morto":
@@ -60,6 +64,7 @@ for i in itens:
         if not img:
             arq = base / "img" / (slug(i["nome"]) + ".jpg")
             if captura(i["link"], arq): img, origem = "img/" + arq.name, "captura de tela"
+            elif anterior.get(i["nome"]): img, origem = anterior[i["nome"]], "imagem guardada"
             else: origem = "sem imagem (ícone)"
         log.append(f"{i['nome']}: {estado}, {origem}")
         saida.append(dict(i, qr=qr(i["link"]), imagem=img))
