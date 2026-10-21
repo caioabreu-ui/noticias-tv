@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IBFE Dicas</title>
+<style>
+@font-face{font-family:"Shoulders";src:url(../assets/BigShoulders-Bold.ttf)}
+:root{--fundo:#FBF4E6;--tinta:#2A2622;--cinza:#6E665C;--linha:#E8DCC6;--branco:#FFFFFF;--cor:#7E3F92}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+#tela{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--fundo);font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:var(--tinta)}
+/* fundo pontilhado de caderno */
+#tela::before{content:"";position:absolute;inset:0;background-image:radial-gradient(#E3D4B8 2px,transparent 2px);background-size:36px 36px;opacity:.7}
+/* topo */
+.top{position:absolute;left:80px;right:80px;top:56px;height:80px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.selo{display:flex;align-items:center;gap:20px}
+.lamp{width:80px;height:80px;border-radius:24px;background:#F2B63C;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);box-shadow:0 6px 0 #C98E1E}
+.selo .t{font-family:"Shoulders",sans-serif;font-size:66px;line-height:.9;text-transform:uppercase}
+.selo .t small{display:block;font-family:"Inter Display",sans-serif;font-size:22px;font-weight:700;letter-spacing:.24em;color:var(--cinza);margin-top:6px}
+.top .por{display:flex;align-items:center;gap:14px;font-size:20px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cinza)}
+.top .por img{height:44px}
+/* cartão */
+.card{position:absolute;left:80px;right:80px;top:180px;bottom:150px;display:flex;gap:50px;z-index:4}
+.ficha{flex:0 0 720px;border-radius:36px;background:var(--cor);color:#fff;position:relative;overflow:hidden;padding:56px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 14px 0 rgba(0,0,0,.12);transform:rotate(-1.5deg)}
+.ficha::after{content:"";position:absolute;right:-120px;bottom:-120px;width:420px;height:420px;border-radius:50%;border:48px solid rgba(255,255,255,.16)}
+.cat{align-self:flex-start;display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.18);font-weight:900;font-size:28px;letter-spacing:.14em;text-transform:uppercase;padding:12px 24px;border-radius:999px}
+.cat svg{width:34px;height:34px}
+.ficha h1{font-family:"Shoulders",sans-serif;font-size:150px;line-height:.86;text-transform:uppercase;word-break:break-word;position:relative;z-index:2}
+.ficha .free{align-self:flex-start;background:#fff;color:var(--cor);font-weight:900;font-size:28px;letter-spacing:.1em;text-transform:uppercase;padding:10px 22px;border-radius:12px;position:relative;z-index:2}
+.texto{flex:1;display:flex;flex-direction:column;min-width:0;padding-top:20px}
+.texto .k{font-weight:800;font-size:24px;letter-spacing:.24em;text-transform:uppercase;color:var(--cor)}
+.texto p{margin-top:20px;font-size:50px;font-weight:700;line-height:1.2;color:var(--tinta)}
+.para{margin-top:34px;display:flex;align-items:center;gap:16px;font-size:30px;font-weight:600;color:var(--cinza)}
+.para b{color:var(--tinta)}
+.para svg{flex:none;width:40px;height:40px}
+.qrbox{margin-top:auto;display:flex;align-items:center;gap:28px;background:var(--branco);border:4px dashed var(--cor);border-radius:28px;padding:20px 32px 20px 20px;align-self:flex-start}
+.qrbox .qr{width:180px;height:180px}
+.qrbox .qr svg{width:100%;height:100%;display:block}
+.qrbox b{display:block;font-weight:900;font-size:36px;line-height:1.1}
+.qrbox span{display:block;margin-top:8px;font-size:24px;font-weight:600;color:var(--cinza)}
+/* rodapé */
+.base{position:absolute;left:80px;right:80px;bottom:60px;height:40px;display:flex;align-items:center;gap:26px;z-index:5}
+.dots{display:flex;gap:10px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--linha)}
+.dots i.on{background:var(--cor);width:42px;border-radius:999px}
+.prog{flex:1;height:6px;border-radius:999px;background:var(--linha);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--cor)}
+.base .hoje{font-size:22px;font-weight:700;letter-spacing:.08em;color:var(--cinza);white-space:nowrap}
+/* transições */
+.card.sai .ficha{opacity:0;transform:rotate(-8deg) translateY(60px);transition:all .45s ease-in}
+.card.sai .texto{opacity:0;transition:opacity .35s ease-in}
+.card.pre .ficha{opacity:0;transform:rotate(6deg) translateY(-60px)}
+.card.pre .texto{opacity:0;transform:translateX(40px)}
+.card.entra .ficha{opacity:1;transform:rotate(-1.5deg);transition:all .75s cubic-bezier(.2,1.2,.4,1)}
+.card.entra .texto{opacity:1;transform:none;transition:all .6s .15s cubic-bezier(.2,.8,.2,1)}
+.vazio{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;z-index:3}
+</style></head>
+<body>
+<div id="tela">
+  <div class="top">
+    <div class="selo">
+      <div class="lamp"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#2A2622" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg></div>
+      <div class="t">Dica útil<small>Ferramentas para educadores</small></div>
+    </div>
+    <div class="por">Seleção <img src="../assets/logo.png" alt="IBFE"></div>
+  </div>
+  <div class="card pre" id="card">
+    <div class="ficha">
+      <div class="cat" id="cat"></div>
+      <h1 id="nome"></h1>
+      <div class="free">Gratuito</div>
+    </div>
+    <div class="texto">
+      <div class="k">O que é</div>
+      <p id="desc"></p>
+      <div class="para"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 11a3 3 0 1 0 0-6M22 21v-1a5 5 0 0 0-4-4.9"/></svg><span>Para: <b id="para"></b></span></div>
+      <div class="qrbox"><div class="qr" id="qr"></div><div><b>Acesse pelo<br>celular</b><span>Aponte a câmera para o código</span></div></div>
+    </div>
+  </div>
+  <div class="vazio" id="vazio">Carregando dicas…</div>
+  <div class="base"><div class="dots" id="dots"></div><div class="prog"><i id="prog"></i></div><div class="hoje" id="hoje"></div></div>
+</div>
+<script>
+var FEED_URL = "dicas_saida.json";
+var TEMPO = 14000;            // ms por dica
+var POR_DIA = 8;              // quantas dicas diferentes entram no dia
+var CORES = {"Plataforma":"#7E3F92","Ferramenta":"#D9772B","Pesquisa":"#2B6F8A","Leitura":"#2E6542","Curso gratuito":"#B23A5B"};
+var ICONES = {
+ "Plataforma":'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+ "Ferramenta":'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></svg>',
+ "Pesquisa":'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+ "Leitura":'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2zM22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>',
+ "Curso gratuito":'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5"/></svg>'};
+var lista = [], idx = -1, timer = null, t0 = 0;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function ajusta(){ var s = Math.min(window.innerWidth/1920, window.innerHeight/1080), t = $("tela");
+  t.style.transform = "scale(" + s + ")"; t.style.left = ((window.innerWidth-1920*s)/2) + "px"; t.style.top = ((window.innerHeight-1080*s)/2) + "px"; }
+window.onresize = ajusta; ajusta();
+/* sorteio estável por dia: muda as dicas a cada dia */
+function doDia(itens){
+  var d = new Date(), semente = d.getFullYear()*1000 + Math.floor((d - new Date(d.getFullYear(),0,0))/864e5);
+  var a = itens.slice();
+  function rnd(){ semente = (semente * 9301 + 49297) % 233280; return semente / 233280; }
+  for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(rnd() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; }
+  return a.slice(0, Math.min(POR_DIA, a.length));
+}
+function mostra(i){
+  var n = lista[i], card = $("card");
+  card.className = "card sai";
+  setTimeout(function(){
+    var cor = CORES[n.categoria] || "#7E3F92";
+    $("tela").style.setProperty("--cor", cor);
+    $("cat").innerHTML = (ICONES[n.categoria] || "") + esc(n.categoria);
+    $("nome").innerHTML = esc(n.nome);
+    var tam = n.nome.length > 22 ? 104 : n.nome.length > 14 ? 124 : 150;
+    $("nome").style.fontSize = tam + "px";
+    $("desc").innerHTML = esc(n.descricao);
+    $("para").innerHTML = esc(n.para);
+    $("qr").innerHTML = n.qr || "";
+    var d = ""; for (var k = 0; k < lista.length; k++) d += '<i' + (k == i ? ' class="on"' : '') + '></i>';
+    $("dots").innerHTML = d;
+    card.className = "card pre";
+    setTimeout(function(){ card.className = "card entra"; }, 30);
+    t0 = new Date().getTime();
+  }, 470);
+}
+function proxima(){ if (!lista.length) return; idx = (idx + 1) % lista.length; mostra(idx); }
+setInterval(function(){ $("prog").style.width = (Math.min(1,(new Date().getTime()-t0)/TEMPO)*100) + "%"; }, 100);
+function carrega(){
+  var x = new XMLHttpRequest();
+  x.open("GET", FEED_URL + "?t=" + new Date().getTime(), true);
+  x.onload = function(){
+    try { var j = JSON.parse(x.responseText); } catch(e){ return; }
+    if (j.dicas && j.dicas.length){ lista = doDia(j.dicas); $("vazio").style.display = "none";
+      $("hoje").innerHTML = "Seleção de hoje · " + lista.length + " dicas";
+      if (!timer){ proxima(); timer = setInterval(proxima, TEMPO); } }
+  };
+  x.send();
+}
+carrega(); setInterval(carrega, 60 * 60 * 1000);
+</script>
+</body></html>
