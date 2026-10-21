@@ -7,7 +7,8 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
 *{box-sizing:border-box;margin:0;padding:0}
 #tela{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:#fff;background:#2B78C2;-webkit-transition:background 1.5s;transition:background 1.5s}
 #ceu{position:absolute;left:0;top:0;width:1920px;height:1080px}
-#flash{position:absolute;left:0;top:0;right:0;bottom:0;background:#fff;opacity:0;pointer-events:none}
+#flash{position:absolute;left:0;top:0;right:0;bottom:0;background:#DDE6FF;opacity:0;pointer-events:none}
+#vinheta{position:absolute;left:0;top:0;width:1920px;height:1080px;background:linear-gradient(90deg,rgba(0,0,0,.22),rgba(0,0,0,0) 45%);pointer-events:none}
 /* sol */
 .sol{position:absolute;right:240px;top:170px;width:300px;height:300px;display:none}
 .sol .nucleo{position:absolute;left:60px;top:60px;width:180px;height:180px;border-radius:50%;background:#FFD54A;box-shadow:0 0 80px 30px rgba(255,213,74,.55)}
@@ -53,10 +54,7 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
 <body>
 <div id="tela">
   <canvas id="ceu" width="1920" height="1080"></canvas>
-  <div class="sol" id="sol"><div class="raios" id="raios"></div><div class="nucleo"></div></div>
-  <div class="lua" id="lua"></div>
-  <div id="nuvens"></div>
-  <div id="flash"></div>
+  <div id="vinheta"></div><div id="flash"></div>
   <div class="top"><div class="local">Ribeirão Preto<small>Previsão do tempo</small></div><div class="hora" id="hora">--:--</div></div>
   <div class="agora">
     <div class="temp"><span id="temp">--</span><sup>°C</sup></div>
@@ -116,44 +114,140 @@ var ICONE={limpo:ic(SVG_SOL),
  tempestade:ic('<g transform="translate(0,-6)">'+SVG_NUV+'</g><path d="M34 44l-8 11h7l-4 9 11-13h-7l4-7z" fill="#FFD54A"/>')};
 var SEMANA=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
-/* ---------- cenário animado ---------- */
-var cv=$("ceu"), ctx=cv.getContext("2d"), part=[], modo="", raioT=0;
-(function(){ var r=$("raios"),h=""; for(var i=0;i<12;i++) h+='<i style="-webkit-transform:rotate('+(i*30)+'deg);transform:rotate('+(i*30)+'deg)"></i>'; r.innerHTML=h; })();
-function nuvens(qtd, cor, escuro){
-  var h=""; for(var i=0;i<qtd;i++){
-    var w=200+Math.random()*180, top=150+Math.random()*50, dur=60+Math.random()*80, atraso=-Math.random()*dur, c=escuro?cor:cor;
-    h+='<div class="nuvem" style="top:'+top+'px;width:'+w+'px;height:'+(w*.42)+'px;background:'+c+';border-radius:999px;-webkit-animation-duration:'+dur+'s;animation-duration:'+dur+'s;-webkit-animation-delay:'+atraso+'s;animation-delay:'+atraso+'s">'+
-       '<b style="left:'+(w*.18)+'px;top:'+(-w*.18)+'px;width:'+(w*.4)+'px;height:'+(w*.4)+'px"></b><b style="left:'+(w*.42)+'px;top:'+(-w*.26)+'px;width:'+(w*.46)+'px;height:'+(w*.46)+'px"></b></div>';
+/* ---------- cenário animado (canvas) ---------- */
+var cv=$("ceu"), ctx=cv.getContext("2d"), W=1920, H=1080;
+var CENA={tipo:"limpo",dia:true,calor:false}, nuvensL=[], gotas=[], respingos=[], estrelas=[], ondas=[], raio=null, cadente=null, t0=0;
+function sprite(w,h,cor,sombra){
+  var c=document.createElement("canvas"); c.width=w; c.height=h; var g=c.getContext("2d");
+  for(var i=0;i<26;i++){
+    var r=h*(0.22+Math.random()*0.28), x=r+Math.random()*(w-2*r), y=h*0.55+(Math.random()-0.5)*h*0.35-(1-Math.abs(x/w-0.5)*2)*h*0.18;
+    var gr=g.createRadialGradient(x,y,0,x,y,r); gr.addColorStop(0,cor(0.95)); gr.addColorStop(0.55,cor(0.6)); gr.addColorStop(1,cor(0));
+    g.fillStyle=gr; g.beginPath(); g.arc(x,y,r,0,6.2832); g.fill();
   }
-  $("nuvens").innerHTML=h;
+  if(sombra){ var sg=g.createLinearGradient(0,0,0,h); sg.addColorStop(0,"rgba(0,0,0,0)"); sg.addColorStop(1,sombra); g.globalCompositeOperation="source-atop"; g.fillStyle=sg; g.fillRect(0,0,w,h); }
+  return c;
 }
+function corRGBA(r,g,b){ return function(a){ return "rgba("+r+","+g+","+b+","+a+")"; }; }
+function montaNuvens(qtd, rgb, sombra, alfa){
+  nuvensL=[]; var sprites=[];
+  for(var k=0;k<5;k++) sprites.push(sprite(700,300,corRGBA(rgb[0],rgb[1],rgb[2]),sombra));
+  for(var i=0;i<qtd;i++){ var camada=i%3, esc=[0.55,0.8,1.1][camada];
+    nuvensL.push({img:sprites[i%5],x:Math.random()*(W+800)-400,y:[60,130,210][camada]+Math.random()*90,esc:esc,v:[0.12,0.22,0.38][camada]*(0.8+Math.random()*0.5),a:alfa*[0.55,0.8,1][camada]}); }
+  nuvensL.sort(function(p,q){return p.esc-q.esc;});
+}
+function montaChuva(n){ gotas=[]; for(var i=0;i<n;i++){ var z=Math.random(); gotas.push({x:Math.random()*W*1.2,y:Math.random()*H,z:z,v:10+z*22,l:10+z*34,w:0.8+z*1.8}); } }
+function montaEstrelas(){ estrelas=[]; for(var i=0;i<220;i++) estrelas.push({x:Math.random()*W,y:Math.random()*H*0.7,r:Math.random()*1.6+0.3,f:Math.random()*6.28,v:0.01+Math.random()*0.04}); }
+function montaOndas(){ ondas=[]; for(var i=0;i<14;i++) ondas.push({y:H*0.55+Math.random()*H*0.45,f:Math.random()*6.28,amp:4+Math.random()*8,v:0.25+Math.random()*0.4}); }
 function cena(t, dia, temp){
-  var fundo, sol=false, lua=false, nv=0, corN="rgba(255,255,255,.9)", chuva=0, estrelas=false, calor=false;
-  if (!dia){ fundo="linear-gradient(#0B1530,#1E2F5C 70%,#33447A)"; lua=(t==="limpo"||t==="poucas"); estrelas=lua; }
-  if (t==="limpo"||t==="poucas"){ if(dia){ calor=temp>=32; fundo=calor?"linear-gradient(#F07B2C,#F7A33B 55%,#FFD36E)":"linear-gradient(#1E7CD6,#4FA3E8 60%,#9CD2F5)"; sol=true; } nv=t==="poucas"?4:0; }
-  if (t==="nublado"||t==="neblina"){ fundo=dia?"linear-gradient(#6E8299,#93A4B6 60%,#B8C4D0)":"linear-gradient(#1B2333,#2E3A4E)"; nv=9; corN=dia?"rgba(236,240,245,.95)":"rgba(90,104,128,.95)"; }
-  if (t==="chuva"){ fundo=dia?"linear-gradient(#4E6177,#6B7F95 60%,#8B9CAE)":"linear-gradient(#141B28,#263246)"; nv=8; corN=dia?"rgba(200,210,222,.95)":"rgba(70,84,106,.95)"; chuva=160; }
-  if (t==="chuvaforte"){ fundo="linear-gradient(#2E3B4C,#465769 60%,#5E6F81)"; nv=10; corN="rgba(150,164,182,.95)"; chuva=320; }
-  if (t==="tempestade"){ fundo="linear-gradient(#1A2130,#2D3747 60%,#3F4A5C)"; nv=11; corN="rgba(96,108,128,.97)"; chuva=380; raioT=1; } else raioT=0;
+  var fundo; CENA={tipo:t,dia:dia,calor:dia&&(t==="limpo"||t==="poucas")&&temp>=32};
+  if(!dia) fundo="linear-gradient(#060C1F,#0F1D3D 55%,#1F3260)";
+  else if(CENA.calor) fundo="linear-gradient(#E2601F,#F08A2E 45%,#F8C062)";
+  else if(t==="limpo"||t==="poucas") fundo="linear-gradient(#1667C9,#3D8FE0 55%,#8EC6F2)";
+  else if(t==="nublado") fundo="linear-gradient(#5E7185,#8293A6 55%,#AEBBC8)";
+  else if(t==="neblina") fundo="linear-gradient(#8C98A3,#AEB7BF 55%,#CDD3D8)";
+  else if(t==="chuva") fundo="linear-gradient(#3C4C5E,#56677A 55%,#7A8A9B)";
+  else if(t==="chuvaforte") fundo="linear-gradient(#273341,#3A4858 55%,#56657A)";
+  else fundo="linear-gradient(#11161F,#1E2633 55%,#323C4D)";
+  if(!dia && t!=="limpo" && t!=="poucas") fundo="linear-gradient(#0B1018,#18202C 55%,#283244)";
   $("tela").style.background=fundo;
-  $("sol").style.display=sol?"block":"none"; $("lua").style.display=lua?"block":"none";
-  nuvens(nv,corN);
-  part=[]; modo=chuva?"chuva":(estrelas?"estrelas":(calor?"calor":""));
-  var n=chuva||(estrelas?140:(calor?70:0));
-  for(var i=0;i<n;i++) part.push({x:Math.random()*1920,y:Math.random()*1080,v:modo==="chuva"?(18+Math.random()*14):(0.4+Math.random()*0.8),l:modo==="chuva"?(18+Math.random()*22):(1+Math.random()*2.5),a:Math.random()});
+  var claro=[250,252,255], cinza=[200,208,218], escuro=[96,106,122], noite=[60,70,90];
+  if(t==="limpo") nuvensL=[];
+  else if(t==="poucas") montaNuvens(5, dia?claro:noite, null, 0.85);
+  else if(t==="nublado"||t==="neblina") montaNuvens(12, dia?claro:noite, dia?"rgba(90,100,115,.35)":null, 0.9);
+  else if(t==="chuva") montaNuvens(13, dia?cinza:noite, "rgba(40,48,60,.45)", 0.95);
+  else montaNuvens(15, dia?escuro:noite, "rgba(10,14,20,.6)", 1);
+  montaChuva(t==="chuva"?260:(t==="chuvaforte"?520:(t==="tempestade"?600:0)));
+  respingos=[]; if(!dia) montaEstrelas(); else estrelas=[]; if(CENA.calor) montaOndas(); else ondas=[];
 }
-function anima(){
-  ctx.clearRect(0,0,1920,1080);
-  if (modo==="chuva"){ ctx.strokeStyle="rgba(220,235,255,.55)"; ctx.lineWidth=2.4; ctx.beginPath();
-    for(var i=0;i<part.length;i++){ var p=part[i]; ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.l*.25,p.y+p.l); p.y+=p.v; p.x-=p.v*.25; if(p.y>1080){p.y=-40;p.x=Math.random()*2100;} }
+function desenhaSol(t){
+  var cx=1500, cy=250, pul=1+Math.sin(t*0.0012)*0.04, R=CENA.calor?150:120;
+  var g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*5*pul);
+  g.addColorStop(0,CENA.calor?"rgba(255,236,170,.55)":"rgba(255,248,215,.45)"); g.addColorStop(0.25,CENA.calor?"rgba(255,190,90,.25)":"rgba(255,240,190,.18)"); g.addColorStop(1,"rgba(255,220,150,0)");
+  ctx.fillStyle=g; ctx.fillRect(cx-R*5,cy-R*5,R*10,R*10);
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.00004);
+  for(var i=0;i<18;i++){ ctx.rotate(6.2832/18); var lg=ctx.createLinearGradient(0,0,0,-R*4.2);
+    lg.addColorStop(0,"rgba(255,245,200,.22)"); lg.addColorStop(1,"rgba(255,245,200,0)");
+    ctx.fillStyle=lg; ctx.beginPath(); ctx.moveTo(-R*0.12,0); ctx.lineTo(0,-R*(3.4+((i%3)*0.4))); ctx.lineTo(R*0.12,0); ctx.fill(); }
+  ctx.restore();
+  var core=ctx.createRadialGradient(cx-R*0.25,cy-R*0.25,R*0.1,cx,cy,R);
+  core.addColorStop(0,"#FFFDF0"); core.addColorStop(0.6,CENA.calor?"#FFD86A":"#FFE98E"); core.addColorStop(1,CENA.calor?"#FFB648":"#FFD45C");
+  ctx.fillStyle=core; ctx.beginPath(); ctx.arc(cx,cy,R*pul,0,6.2832); ctx.fill();
+}
+function desenhaLua(t){
+  var cx=1500, cy=240, R=95;
+  var g=ctx.createRadialGradient(cx,cy,R*0.8,cx,cy,R*4); g.addColorStop(0,"rgba(230,236,255,.28)"); g.addColorStop(1,"rgba(230,236,255,0)");
+  ctx.fillStyle=g; ctx.fillRect(cx-R*4,cy-R*4,R*8,R*8);
+  var m=ctx.createRadialGradient(cx-30,cy-30,10,cx,cy,R); m.addColorStop(0,"#FFFDF5"); m.addColorStop(1,"#D9DCE6");
+  ctx.fillStyle=m; ctx.beginPath(); ctx.arc(cx,cy,R,0,6.2832); ctx.fill();
+  var cr=[[-30,-20,18],[25,10,13],[-5,38,10],[38,-34,8]]; ctx.fillStyle="rgba(170,176,192,.45)";
+  for(var i=0;i<cr.length;i++){ ctx.beginPath(); ctx.arc(cx+cr[i][0],cy+cr[i][1],cr[i][2],0,6.2832); ctx.fill(); }
+}
+function desenhaEstrelas(t){
+  for(var i=0;i<estrelas.length;i++){ var e=estrelas[i]; e.f+=e.v; ctx.fillStyle="rgba(255,255,255,"+(0.25+0.75*Math.abs(Math.sin(e.f)))+")"; ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,6.2832); ctx.fill(); }
+  if(!cadente && Math.random()<0.002) cadente={x:200+Math.random()*1000,y:40+Math.random()*200,v:22,vida:1};
+  if(cadente){ var c=cadente, lg=ctx.createLinearGradient(c.x,c.y,c.x-180,c.y-70);
+    lg.addColorStop(0,"rgba(255,255,255,"+c.vida+")"); lg.addColorStop(1,"rgba(255,255,255,0)");
+    ctx.strokeStyle=lg; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(c.x,c.y); ctx.lineTo(c.x-180,c.y-70); ctx.stroke();
+    c.x+=c.v; c.y+=c.v*0.39; c.vida-=0.02; if(c.vida<=0) cadente=null; }
+}
+function desenhaNuvens(luz){
+  for(var i=0;i<nuvensL.length;i++){ var n=nuvensL[i], w=n.img.width*n.esc, h=n.img.height*n.esc;
+    n.x+=n.v; if(n.x>W+50) n.x=-w-50;
+    ctx.globalAlpha=Math.min(1,n.a+luz); ctx.drawImage(n.img,n.x,n.y,w,h); }
+  ctx.globalAlpha=1;
+}
+function desenhaChuva(){
+  ctx.lineCap="round";
+  for(var c=0;c<3;c++){ ctx.beginPath(); var al=[0.22,0.35,0.55][c];
+    ctx.strokeStyle="rgba(210,225,245,"+al+")"; ctx.lineWidth=[0.9,1.5,2.4][c];
+    for(var i=0;i<gotas.length;i++){ var p=gotas[i]; if(Math.floor(p.z*3)!==c) continue;
+      ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.l*0.18,p.y+p.l); p.y+=p.v; p.x-=p.v*0.18;
+      if(p.y>H-20){ if(p.z>0.6 && respingos.length<120) respingos.push({x:p.x,y:H-24-Math.random()*30,r:1,vida:1}); p.y=-60; p.x=Math.random()*W*1.2; } }
     ctx.stroke(); }
-  else if (modo==="estrelas"){ for(var j=0;j<part.length;j++){ var e=part[j]; e.a+=0.02; ctx.fillStyle="rgba(255,255,255,"+(0.35+0.65*Math.abs(Math.sin(e.a)))+")"; ctx.fillRect(e.x,e.y*0.75,e.l,e.l); } }
-  else if (modo==="calor"){ for(var k=0;k<part.length;k++){ var c=part[k]; c.y-=c.v; c.a+=0.03; if(c.y<0){c.y=1080;c.x=Math.random()*1920;} ctx.fillStyle="rgba(255,240,200,"+(0.12+0.12*Math.sin(c.a))+")"; ctx.beginPath(); ctx.arc(c.x+Math.sin(c.a)*20,c.y,c.l*6,0,6.28); ctx.fill(); } }
-  if (raioT && Math.random()<0.006) relampago();
-  (window.requestAnimationFrame||window.webkitRequestAnimationFrame||function(f){setTimeout(f,33);})(anima);
+  ctx.strokeStyle="rgba(220,232,250,.6)"; ctx.lineWidth=1.4;
+  for(var k=respingos.length-1;k>=0;k--){ var s=respingos[k]; ctx.globalAlpha=s.vida; ctx.beginPath(); ctx.ellipse? ctx.ellipse(s.x,s.y,s.r*3,s.r,0,3.1416,6.2832) : ctx.arc(s.x,s.y,s.r*2,3.1416,6.2832); ctx.stroke(); s.r+=0.5; s.vida-=0.06; if(s.vida<=0) respingos.splice(k,1); }
+  ctx.globalAlpha=1;
+  var nv=ctx.createLinearGradient(0,H-260,0,H); nv.addColorStop(0,"rgba(200,212,228,0)"); nv.addColorStop(1,"rgba(200,212,228,.18)"); ctx.fillStyle=nv; ctx.fillRect(0,H-260,W,260);
 }
-function relampago(){ var f=$("flash"); f.style.opacity=.85; setTimeout(function(){f.style.opacity=0;},80); setTimeout(function(){f.style.opacity=.6;},160); setTimeout(function(){f.style.opacity=0;},240); }
-anima();
+function geraRaio(x,y,ang,comp,prof){
+  var seg=[], px=x, py=y, passos=Math.floor(comp/22);
+  for(var i=0;i<passos;i++){ var nx=px+Math.sin(ang)*22+(Math.random()-0.5)*26, ny=py+Math.cos(ang)*22; seg.push([px,py,nx,ny,prof]);
+    if(prof<2 && Math.random()<0.07){ var b=geraRaio(nx,ny,ang+(Math.random()<0.5?-0.7:0.7),comp*0.35,prof+1); seg=seg.concat(b); }
+    px=nx; py=ny; }
+  return seg;
+}
+function desenhaRaio(){
+  if(!raio && Math.random()<0.006){ raio={seg:geraRaio(500+Math.random()*1200,120,(Math.random()-0.5)*0.4,700+Math.random()*250,0),vida:1}; flash(); }
+  if(!raio) return;
+  ctx.save(); ctx.lineCap="round"; ctx.shadowColor="rgba(190,210,255,1)"; ctx.shadowBlur=24;
+  for(var i=0;i<raio.seg.length;i++){ var s=raio.seg[i]; ctx.strokeStyle="rgba(240,245,255,"+(raio.vida*(s[4]?0.55:1))+")"; ctx.lineWidth=s[4]?1.5:3.5; ctx.beginPath(); ctx.moveTo(s[0],s[1]); ctx.lineTo(s[2],s[3]); ctx.stroke(); }
+  ctx.restore(); raio.vida-=0.09; if(raio.vida<=0) raio=null;
+}
+function flash(){ var f=$("flash"); f.style.opacity=.55; setTimeout(function(){f.style.opacity=0;},70); setTimeout(function(){f.style.opacity=.35;},150); setTimeout(function(){f.style.opacity=0;},230); }
+function desenhaCalor(t){
+  for(var i=0;i<ondas.length;i++){ var o=ondas[i]; o.y-=o.v; o.f+=0.04; if(o.y<H*0.45) o.y=H;
+    ctx.strokeStyle="rgba(255,240,215,"+(0.07+0.05*Math.sin(o.f))+")"; ctx.lineWidth=10; ctx.beginPath();
+    for(var x=0;x<=W;x+=40){ var y=o.y+Math.sin(x*0.01+o.f)*o.amp; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); }
+}
+function desenhaNeblina(t){
+  for(var i=0;i<4;i++){ var y=520+i*140, dx=Math.sin(t*0.0002+i)*120; var g=ctx.createLinearGradient(0,y-90,0,y+90);
+    g.addColorStop(0,"rgba(240,244,248,0)"); g.addColorStop(0.5,"rgba(240,244,248,.16)"); g.addColorStop(1,"rgba(240,244,248,0)"); ctx.fillStyle=g; ctx.fillRect(dx-200,y-90,W+400,180); }
+}
+var ultimo=0;
+function anima(ts){
+  ts=ts||new Date().getTime(); if(ts-ultimo<30){ req(anima); return; } ultimo=ts;
+  ctx.clearRect(0,0,W,H); var t=CENA.tipo;
+  if(!CENA.dia) desenhaEstrelas(ts);
+  if(t==="limpo"||t==="poucas"){ if(CENA.dia) desenhaSol(ts); else desenhaLua(ts); }
+  desenhaNuvens(raio?0.25:0);
+  if(t==="neblina") desenhaNeblina(ts);
+  if(gotas.length) desenhaChuva();
+  if(t==="tempestade") desenhaRaio();
+  if(CENA.calor) desenhaCalor(ts);
+  req(anima);
+}
+var req=window.requestAnimationFrame||window.webkitRequestAnimationFrame||function(f){setTimeout(function(){f(new Date().getTime());},33);};
+req(anima);
 
 /* ---------- dados ---------- */
 function dica(t,temp,umid){
