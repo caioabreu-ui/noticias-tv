@@ -1,6 +1,8 @@
 [
   {"nome": "G1 Educação",        "url": "https://g1.globo.com/rss/g1/educacao/"},
-  {"nome": "G1 Ribeirão Preto",  "url": "https://g1.globo.com/rss/g1/sp/ribeirao-preto-franca/"},
   {"nome": "Agência Brasil",     "url": "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml"},
-  {"nome": "Porvir",             "url": "https://porvir.org/feed/"}
+  {"nome": "Porvir",             "url": "https://porvir.org/feed/"},
+  {"nome": "G1 Ribeirão Preto",  "url": "https://g1.globo.com/rss/g1/sp/ribeirao-preto-franca/"},
+  {"nome": "Agência Brasil Saúde", "url": "https://agenciabrasil.ebc.com.br/rss/saude/feed.xml"},
+  {"nome": "G1 Ciência",         "url": "https://g1.globo.com/rss/g1/ciencia-e-saude/"}
 ]
