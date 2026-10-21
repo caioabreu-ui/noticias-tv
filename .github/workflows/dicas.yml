@@ -15,13 +15,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
-      - run: pip install qrcode
+      - run: pip install qrcode playwright && python -m playwright install --with-deps chromium
       - run: python dicas/gerar_dicas.py
       - name: Salvar
         run: |
           git config user.name "robo-tv-ibfe"
           git config user.email "robo@users.noreply.github.com"
-          git add dicas/dicas_saida.json
+          git add dicas/dicas_saida.json dicas/img
           git diff --cached --quiet && exit 0
           git commit -m "Dicas verificadas"
           git pull --rebase -X ours origin main
