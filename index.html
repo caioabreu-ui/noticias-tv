@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IBFE Notícias</title>
+<style>
+@font-face{font-family:"PlexSerif";src:url(assets/IBMPlexSerif-Bold.ttf)}
+:root{--papel:#F6F5F1;--tinta:#141518;--cinza:#5E6168;--linha:#DCDAD3;--verm:#D7262E;--branco:#FFFFFF}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+#tela{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--papel);font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:var(--tinta)}
+/* topo */
+.top{position:absolute;left:0;right:0;top:0;height:120px;background:var(--tinta);color:var(--branco);display:flex;align-items:center;justify-content:space-between;padding:0 80px;z-index:5}
+.top .marca{display:flex;align-items:center;gap:28px}
+.agora{display:flex;align-items:center;gap:14px;background:var(--verm);color:#fff;font-weight:900;font-size:30px;letter-spacing:.14em;padding:10px 24px 10px 20px;border-radius:10px}
+.agora i{width:16px;height:16px;border-radius:50%;background:#fff;animation:pisca 1.2s ease-in-out infinite}
+@keyframes pisca{0%,100%{opacity:1}50%{opacity:.2}}
+.top .tag{font-weight:900;font-size:40px;letter-spacing:.02em;text-transform:uppercase}
+.top .dir{display:flex;align-items:center;gap:30px}
+.top .hora{font-weight:700;font-size:32px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.top .por{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#A9ABB1;border-left:2px solid #34363B;padding-left:30px}
+.top .por img{height:40px}
+/* cartão */
+.card{position:absolute;left:80px;right:80px;top:180px;bottom:170px;display:flex;gap:56px;z-index:4}
+.foto{flex:0 0 760px;border-radius:8px;overflow:hidden;position:relative;background:#E7E5DF}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto .sem{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"PlexSerif",Georgia,serif;font-size:96px;color:var(--cinza);line-height:1;text-align:center;padding:40px}
+.foto .fonte{display:none}
+.texto{flex:1;display:flex;flex-direction:column;min-width:0;border-top:6px solid var(--tinta);padding-top:26px}
+.meta{display:flex;align-items:center;gap:18px;font-weight:800;font-size:26px;letter-spacing:.14em;text-transform:uppercase}
+.meta .fnt{color:var(--verm)}
+.meta .sep{width:8px;height:8px;border-radius:50%;background:var(--linha)}
+.meta .quando{color:var(--cinza);font-weight:700}
+.texto h1{margin-top:24px;font-family:"PlexSerif",Georgia,serif;font-weight:700;font-size:64px;line-height:1.12;letter-spacing:-.01em;color:var(--tinta);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.texto p{margin-top:24px;font-size:31px;font-weight:500;line-height:1.4;color:var(--cinza);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.qrbox{margin-top:auto;display:flex;align-items:center;gap:28px;border:3px solid var(--tinta);border-radius:12px;padding:18px 30px 18px 18px;align-self:flex-start;background:var(--branco)}
+.qrbox .qr{width:170px;height:170px}
+.qrbox .qr svg{width:100%;height:100%;display:block}
+.qrbox b{display:block;font-weight:900;font-size:34px;line-height:1.1}
+.qrbox span{display:block;margin-top:8px;font-size:24px;font-weight:600;color:var(--cinza)}
+/* rodapé */
+.base{position:absolute;left:0;right:0;bottom:0;height:110px;border-top:2px solid var(--linha);display:flex;align-items:center;gap:30px;padding:0 80px;z-index:5;background:var(--papel)}
+.dots{display:flex;gap:10px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--linha)}
+.dots i.on{background:var(--verm);width:42px;border-radius:999px}
+.prog{flex:1;height:6px;border-radius:999px;background:var(--linha);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--tinta)}
+.base .upd{font-size:22px;font-weight:700;letter-spacing:.08em;color:var(--cinza);white-space:nowrap}
+/* transições */
+.card.sai .foto,.card.sai .texto{opacity:0;transform:translateY(24px);transition:all .4s ease-in}
+.card.entra .foto,.card.entra .texto{transform:none;opacity:1;transition:all .6s cubic-bezier(.2,.8,.2,1)}
+.card.pre .foto,.card.pre .texto{transform:translateY(-24px);opacity:0}
+.card.entra .texto{transition-delay:.08s}
+.vazio{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;z-index:3}
+</style></head>
+<body>
+<div id="tela">
+  
+  <div class="top">
+    <div class="marca"><div class="agora"><i></i>AGORA</div><div class="tag">Notícias do dia</div></div>
+    <div class="dir"><div class="hora" id="hora">--:--</div><div class="por">Curadoria <img src="assets/logo_light.png" alt="IBFE"></div></div>
+  </div>
+  <div class="card pre" id="card">
+    <div class="foto" id="foto"></div>
+    <div class="texto">
+      <div class="meta"><span class="fnt" id="fnt"></span><span class="sep"></span><span class="quando" id="quando"></span></div>
+      <h1 id="titulo"></h1>
+      <p id="resumo"></p>
+      <div class="qrbox"><div class="qr" id="qr"></div><div><b>Leia a matéria<br>completa</b><span>Aponte a câmera do celular</span></div></div>
+    </div>
+  </div>
+  <div class="vazio" id="vazio">Carregando notícias…</div>
+  <div class="base"><div class="dots" id="dots"></div><div class="prog"><i id="prog"></i></div><div class="upd" id="upd"></div></div>
+</div>
+<script>
+/* Configurações */
+var FEED_URL = "noticias.json";   // mesmo endereço do site
+var TEMPO = 12000;                 // ms por notícia
+var RECARREGA = 10 * 60 * 1000;    // busca o feed de novo a cada 10 min
+
+var noticias = [], idx = -1, timer = null, t0 = 0;
+function $(id){ return document.getElementById(id); }
+function ajusta(){ var s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
+  var t = $("tela"); t.style.transform = "scale(" + s + ")";
+  t.style.left = ((window.innerWidth - 1920*s)/2) + "px"; t.style.top = ((window.innerHeight - 1080*s)/2) + "px"; }
+window.onresize = ajusta; ajusta();
+function dois(n){ return (n < 10 ? "0" : "") + n; }
+function relogio(){ var d = new Date(); var dias=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  $("hora").innerHTML = dias[d.getDay()] + " " + dois(d.getDate()) + "/" + dois(d.getMonth()+1) + " · " + dois(d.getHours()) + ":" + dois(d.getMinutes()); }
+setInterval(relogio, 10000); relogio();
+function quando(iso){ var d = new Date(iso), h = (new Date() - d)/36e5;
+  if (h < 1) return "Há poucos minutos"; if (h < 24) return "Há " + Math.floor(h) + "h"; return "Ontem"; }
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+function mostra(i){
+  var n = noticias[i], card = $("card");
+  card.className = "card sai";
+  setTimeout(function(){
+    var foto = $("foto");
+    foto.innerHTML = (n.imagem ? '<img src="' + n.imagem + '" onerror="this.parentNode.innerHTML=\'<div class=sem>' + esc(n.fonte) + '</div>\'">' : '<div class="sem">' + esc(n.fonte) + '</div>') + '<div class="fonte">' + esc(n.fonte) + '</div>';
+    $("quando").innerHTML = quando(n.data); $("fnt").innerHTML = esc(n.fonte);
+    $("titulo").innerHTML = esc(n.titulo);
+    $("resumo").innerHTML = esc(n.resumo);
+    $("qr").innerHTML = n.qr || "";
+    var d = ""; for (var k = 0; k < noticias.length; k++) d += '<i' + (k == i ? ' class="on"' : '') + '></i>';
+    $("dots").innerHTML = d;
+    card.className = "card pre";
+    setTimeout(function(){ card.className = "card entra"; }, 30);
+    t0 = new Date().getTime();
+  }, 460);
+}
+function proxima(){ if (!noticias.length) return; idx = (idx + 1) % noticias.length; mostra(idx); }
+setInterval(function(){ var p = Math.min(1, (new Date().getTime() - t0) / TEMPO); $("prog").style.width = (p*100) + "%"; }, 100);
+
+function carrega(){
+  var x = new XMLHttpRequest();
+  x.open("GET", FEED_URL + "?t=" + new Date().getTime(), true);
+  x.onload = function(){
+    try { var j = JSON.parse(x.responseText); } catch(e){ return; }
+    if (j.noticias && j.noticias.length){ noticias = j.noticias; $("vazio").style.display = "none";
+      var u = new Date(j.atualizado); $("upd").innerHTML = "Atualizado às " + dois(u.getHours()) + ":" + dois(u.getMinutes());
+      if (!timer){ proxima(); timer = setInterval(proxima, TEMPO); } }
+  };
+  x.send();
+}
+carrega(); setInterval(carrega, RECARREGA);
+</script>
+</body></html>

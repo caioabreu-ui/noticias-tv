@@ -1,0 +1,6 @@
+[
+  {"nome": "G1 Educação",        "url": "https://g1.globo.com/rss/g1/educacao/"},
+  {"nome": "G1 Ribeirão Preto",  "url": "https://g1.globo.com/rss/g1/sp/ribeirao-preto-franca/"},
+  {"nome": "Agência Brasil",     "url": "https://agenciabrasil.ebc.com.br/rss/educacao/feed.xml"},
+  {"nome": "Porvir",             "url": "https://porvir.org/feed/"}
+]
