@@ -3,80 +3,100 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>IBFE no Instagram</title>
 <style>
-@font-face{font-family:"Shoulders";src:url(../assets/BigShoulders-Bold.ttf)}
+@font-face{font-family:"Cartaz";src:url(../assets/LondrinaSolid-900.woff2) format("woff2");font-weight:900}
+@font-face{font-family:"Cartaz";src:url(../assets/LondrinaSolid-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Texto";src:url(../assets/Montserrat-700.woff2) format("woff2");font-weight:100 900}
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
 *{box-sizing:border-box;margin:0;padding:0}
-#tela{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter Display","Inter","Segoe UI",Arial,sans-serif;color:#fff;
-  background:linear-gradient(125deg,#4F2A8C 0%,#9A2F8F 38%,#E0395B 68%,#F7883A 100%)}
-#tela::before{content:"";position:absolute;left:0;top:0;width:1920px;height:1080px;background:radial-gradient(circle at 18% 20%,rgba(255,255,255,.16),rgba(255,255,255,0) 40%),radial-gradient(circle at 85% 90%,rgba(255,210,120,.25),rgba(255,255,255,0) 45%)}
-#coracoes{position:absolute;left:0;top:0;width:1920px;height:1080px}
-/* celular */
-.cel{position:absolute;left:150px;top:90px;width:500px;height:900px;border-radius:64px;background:#111;padding:20px;box-shadow:0 40px 80px rgba(40,0,40,.45);-webkit-transform:rotate(-4deg);transform:rotate(-4deg)}
-.cel .tela{width:100%;height:100%;border-radius:46px;background:#fff;overflow:hidden;color:#111}
-.cel .cab{height:96px;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:0 24px}
-.cel .av{width:56px;height:56px;border-radius:50%;padding:3px;background:linear-gradient(45deg,#F7883A,#E0395B,#9A2F8F)}
-.cel .av div{width:100%;height:100%;border-radius:50%;background:#fff url(../assets/logo.png) center/80% no-repeat}
-.cel .nm{margin-left:16px;font-weight:800;font-size:24px}
-.cel .nm small{display:block;font-weight:500;font-size:18px;color:#777}
-.cel .foto{width:460px;height:460px;background:#eee center/cover no-repeat}
-.cel .acoes{height:80px;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;padding:0 22px}
-.cel .acoes svg{margin-right:22px}
-.cel .leg{padding:0 24px;font-size:20px;line-height:1.35;color:#222;max-height:150px;overflow:hidden}
-.cel .leg b{font-weight:800}
-.cor-btn{-webkit-transform-origin:50% 50%;transform-origin:50% 50%;-webkit-animation:bate 1.6s ease-in-out infinite;animation:bate 1.6s ease-in-out infinite}
-@-webkit-keyframes bate{0%,100%{-webkit-transform:scale(1)}15%{-webkit-transform:scale(1.3)}30%{-webkit-transform:scale(1)}45%{-webkit-transform:scale(1.18)}60%{-webkit-transform:scale(1)}}
-@keyframes bate{0%,100%{transform:scale(1)}15%{transform:scale(1.3)}30%{transform:scale(1)}45%{transform:scale(1.18)}60%{transform:scale(1)}}
-/* coração grande sobre a foto */
-.big{position:absolute;left:310px;top:330px;width:220px;height:220px;opacity:0;-webkit-animation:curte 4s ease-in-out infinite;animation:curte 4s ease-in-out infinite}
-@-webkit-keyframes curte{0%,55%{opacity:0;-webkit-transform:scale(.2)}62%{opacity:1;-webkit-transform:scale(1.15)}68%{-webkit-transform:scale(.95)}74%{-webkit-transform:scale(1.05)}88%{opacity:1;-webkit-transform:scale(1)}100%{opacity:0;-webkit-transform:scale(1)}}
-@keyframes curte{0%,55%{opacity:0;transform:scale(.2)}62%{opacity:1;transform:scale(1.15)}68%{transform:scale(.95)}74%{transform:scale(1.05)}88%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+#tela{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:#ECEBE6;font-family:"Texto","Montserrat",Arial,sans-serif;color:#5B4D33}
+.faixa{position:absolute;left:0;right:0;top:0;height:22px;background:#5B4D33}
+.base{position:absolute;left:0;right:0;bottom:0;height:120px;background:#5B4D33;color:#ECEBE6}
+.base .t{position:absolute;left:110px;top:38px;font-weight:700;font-size:34px}
+.base .t b{color:#C6CB57;font-weight:900}
+.base img{position:absolute;right:110px;top:34px;height:52px}
+/* laços */
+.laco{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+.laco path{fill:none;stroke:#C6CB57;stroke-width:58;stroke-linecap:round;stroke-dasharray:4200;stroke-dashoffset:4200;-webkit-animation:desenha 2.6s .2s cubic-bezier(.6,0,.2,1) forwards;animation:desenha 2.6s .2s cubic-bezier(.6,0,.2,1) forwards}
+.laco path.b{-webkit-animation-delay:.6s;animation-delay:.6s}
+@-webkit-keyframes desenha{to{stroke-dashoffset:0}} @keyframes desenha{to{stroke-dashoffset:0}}
 /* texto */
-.txt{position:absolute;left:780px;right:110px;top:110px}
-.selo{display:inline-block;background:#fff;color:#C2306E;font-weight:900;font-size:28px;letter-spacing:.14em;text-transform:uppercase;padding:12px 26px;border-radius:999px}
-.selo i{display:inline-block;width:14px;height:14px;border-radius:50%;background:#E0395B;margin-right:12px;vertical-align:1px;-webkit-animation:pisca 1.2s infinite;animation:pisca 1.2s infinite}
-@-webkit-keyframes pisca{50%{opacity:.2}} @keyframes pisca{50%{opacity:.2}}
-h1{margin-top:30px;font-family:"Shoulders",sans-serif;font-size:150px;line-height:.88;text-transform:uppercase;text-shadow:0 6px 30px rgba(60,0,40,.3)}
-h1 em{font-style:normal;color:#FFE08A}
-.sub{margin-top:26px;font-size:40px;font-weight:700;line-height:1.3}
-.sub b{font-weight:900}
-.qrbox{margin-top:46px;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;background:#fff;color:#2A1030;border-radius:30px;padding:22px 34px 22px 22px;width:780px}
-.qrbox .qr{width:200px;height:200px;-webkit-box-flex:0;flex:none}
-.qrbox .qr svg{width:100%;height:100%;display:block}
-.qrbox .t{margin-left:30px}
-.qrbox b{display:block;font-weight:900;font-size:40px;line-height:1.1}
-.qrbox span{display:block;margin-top:10px;font-size:26px;font-weight:600;color:#7A4A70}
-.arroba{position:absolute;right:110px;bottom:60px;font-weight:900;font-size:34px;letter-spacing:.02em;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center}
-.arroba svg{margin-right:14px}
-.carregando{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:40px;font-weight:800}
+.esq{position:absolute;left:110px;top:90px;width:900px}
+.rot{font-family:"Cartaz";font-weight:400;font-size:34px;letter-spacing:.06em;text-transform:uppercase;opacity:0;-webkit-animation:entra .6s .3s both;animation:entra .6s .3s both}
+h1{margin-top:14px;font-family:"Cartaz";font-weight:900;font-size:128px;line-height:.9;letter-spacing:.02em;text-transform:uppercase}
+h1 span{display:block;opacity:0;-webkit-animation:sobe .7s cubic-bezier(.2,.8,.2,1) both;animation:sobe .7s cubic-bezier(.2,.8,.2,1) both}
+h1 em{font-style:normal;color:#4AA063}
+@-webkit-keyframes sobe{from{opacity:0;-webkit-transform:translateY(50px)}to{opacity:1;-webkit-transform:none}}
+@keyframes sobe{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:none}}
+@-webkit-keyframes entra{from{opacity:0}to{opacity:1}} @keyframes entra{from{opacity:0}to{opacity:1}}
+.arroba{margin-top:40px;display:inline-block;position:relative;opacity:0;-webkit-animation:entra .6s 1.6s both;animation:entra .6s 1.6s both}
+.arroba .pill{display:inline-block;background:#C6CB57;border:5px solid #5B4D33;border-radius:999px;padding:12px 120px 12px 40px;font-family:"Cartaz";font-weight:900;font-size:46px;letter-spacing:.04em;color:#5B4D33}
+.ig{position:absolute;right:-30px;top:-22px;width:120px;height:120px;border-radius:34px;background:linear-gradient(45deg,#F9C13A 0%,#F2602F 30%,#D7287A 62%,#7C3AE0 100%);box-shadow:0 10px 0 #B33A2A,0 16px 26px rgba(0,0,0,.25);-webkit-transform:rotate(8deg);transform:rotate(8deg)}
+.ig i{position:absolute;left:24px;top:24px;width:72px;height:72px;border:8px solid #fff;border-radius:22px}
+.ig i::after{content:"";position:absolute;left:13px;top:13px;width:30px;height:30px;border:7px solid #fff;border-radius:50%;box-sizing:border-box}
+.ig b{position:absolute;right:30px;top:30px;width:12px;height:12px;border-radius:50%;background:#fff}
+.chama{margin-top:30px;font-size:36px;font-weight:600;line-height:1.35;color:#3E3422;opacity:0;-webkit-animation:entra .6s 1.9s both;animation:entra .6s 1.9s both}
+.chama b{font-weight:900}
+/* polaroides */
+.mesa{position:absolute;left:1060px;top:80px;width:760px;height:860px}
+.pol{position:absolute;width:470px;background:#fff;padding:24px 24px 90px;box-shadow:0 18px 40px rgba(60,45,20,.28),0 2px 6px rgba(60,45,20,.2)}
+.pol .ft{width:422px;height:422px;background:#ddd center/cover no-repeat;position:relative;overflow:hidden}
+.pol .ft::after{content:"";position:absolute;left:0;top:0;right:0;bottom:0;background:#F3F1EA}
+.pol .cap{position:absolute;left:24px;right:24px;bottom:22px;font-family:"Cartaz";font-weight:400;font-size:34px;color:#5B4D33;white-space:nowrap;overflow:hidden}
+.pol .fita{position:absolute;left:50%;top:-26px;width:150px;height:46px;margin-left:-75px;background:rgba(198,203,87,.75);-webkit-transform:rotate(-4deg);transform:rotate(-4deg)}
+.p3{left:250px;top:70px;-webkit-transform:rotate(9deg);transform:rotate(9deg);opacity:0;-webkit-animation:caiTras .8s .5s both;animation:caiTras .8s .5s both}
+.p2{left:40px;top:120px;-webkit-transform:rotate(-8deg);transform:rotate(-8deg);opacity:0;-webkit-animation:caiTras .8s .8s both;animation:caiTras .8s .8s both}
+.p3 .ft::after,.p2 .ft::after{display:none}
+.p2 .cap,.p3 .cap{display:none}
+@-webkit-keyframes caiTras{from{opacity:0;margin-top:-60px}to{opacity:1;margin-top:0}}
+@keyframes caiTras{from{opacity:0;margin-top:-60px}to{opacity:1;margin-top:0}}
+.p1{left:150px;top:150px;z-index:3;-webkit-animation:cai 1.1s 1.2s cubic-bezier(.3,1.25,.5,1) both;animation:cai 1.1s 1.2s cubic-bezier(.3,1.25,.5,1) both}
+@-webkit-keyframes cai{0%{opacity:0;-webkit-transform:translate(260px,-700px) rotate(28deg)}100%{opacity:1;-webkit-transform:rotate(-2deg)}}
+@keyframes cai{0%{opacity:0;transform:translate(260px,-700px) rotate(28deg)}100%{opacity:1;transform:rotate(-2deg)}}
+.p1 .ft::after{-webkit-animation:revela 3.5s 2.2s ease-out forwards;animation:revela 3.5s 2.2s ease-out forwards}
+@-webkit-keyframes revela{from{opacity:1}to{opacity:0}} @keyframes revela{from{opacity:1}to{opacity:0}}
+.p1 .ft img{display:none}
+.novo{position:absolute;right:-40px;top:-40px;z-index:5;width:170px;height:170px;border-radius:50%;background:#4AA063;color:#fff;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;text-align:center;font-family:"Cartaz";font-weight:900;font-size:40px;line-height:.95;-webkit-transform:rotate(12deg) scale(0);transform:rotate(12deg) scale(0);-webkit-animation:selo .6s 2.4s cubic-bezier(.2,1.4,.4,1) forwards;animation:selo .6s 2.4s cubic-bezier(.2,1.4,.4,1) forwards;border:6px dashed rgba(255,255,255,.6)}
+@-webkit-keyframes selo{to{-webkit-transform:rotate(12deg) scale(1)}} @keyframes selo{to{transform:rotate(12deg) scale(1)}}
+.cora{position:absolute;left:50%;top:230px;width:150px;height:150px;margin-left:-75px;z-index:4;opacity:0;-webkit-animation:like 5s 5.5s ease-in-out infinite;animation:like 5s 5.5s ease-in-out infinite}
+@-webkit-keyframes like{0%{opacity:0;-webkit-transform:scale(.2)}8%{opacity:1;-webkit-transform:scale(1.2)}14%{-webkit-transform:scale(.95)}20%{-webkit-transform:scale(1.05)}35%{opacity:1;-webkit-transform:scale(1)}45%,100%{opacity:0;-webkit-transform:scale(1)}}
+@keyframes like{0%{opacity:0;transform:scale(.2)}8%{opacity:1;transform:scale(1.2)}14%{transform:scale(.95)}20%{transform:scale(1.05)}35%{opacity:1;transform:scale(1)}45%,100%{opacity:0;transform:scale(1)}}
+/* QR */
+.qrcard{position:absolute;left:110px;top:760px;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;opacity:0;-webkit-animation:entra .6s 2.4s both;animation:entra .6s 2.4s both}
+.qrcard .qr{width:170px;height:170px;background:#fff;border:6px solid #4AA063;border-radius:16px;padding:10px;-webkit-transform:rotate(-3deg);transform:rotate(-3deg);box-shadow:8px 8px 0 #C6CB57}
+.qrcard .qr svg{width:100%;height:100%;display:block}
+.qrcard .t{margin-left:34px}
+.qrcard small{display:block;font-weight:800;font-size:22px;letter-spacing:.18em;text-transform:uppercase;color:#4AA063}
+.qrcard b{display:block;margin-top:6px;font-family:"Cartaz";font-weight:900;font-size:50px;line-height:1;text-transform:uppercase;color:#5B4D33}
+.carregando{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:36px;font-weight:700}
 </style></head>
 <body>
 <div id="tela">
-  <canvas id="coracoes" width="1920" height="1080"></canvas>
-  <div class="cel"><div class="tela">
-    <div class="cab"><div class="av"><div></div></div><div class="nm">ibferibeirao<small>Ribeirão Preto</small></div></div>
-    <div class="foto" id="foto"></div>
-    <div class="acoes">
-      <svg class="cor-btn" width="44" height="44" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 3 4.5 6.7 4.5c2.2 0 3.6 1.2 4.3 2.4.7-1.2 2.1-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#ED2D58"/></svg>
-      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.6A8.5 8.5 0 1 1 21 11.5z"/></svg>
-      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round"><path d="M22 3L2 10l8 3 3 8z"/></svg>
-    </div>
-    <div class="leg" id="leg"></div>
-  </div></div>
-  <svg class="big" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 3 4.5 6.7 4.5c2.2 0 3.6 1.2 4.3 2.4.7-1.2 2.1-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#fff" stroke="rgba(0,0,0,.08)" stroke-width=".5"/></svg>
-  <div class="txt">
-    <div class="selo" id="selo"><i></i>Post novo</div>
-    <h1 id="titulo">Você já curtiu<br><em>nosso post?</em></h1>
-    <div class="sub" id="sub"></div>
-    <div class="qrbox"><div class="qr" id="qr"></div><div class="t"><b id="qrt">Curta, comente<br>e compartilhe!</b><span id="qrs">Aponte a câmera do celular</span></div></div>
+  <svg class="laco" viewBox="0 0 1920 1080"><path d="M1180 -40 C 1300 200, 1560 260, 1700 120 S 1880 -60, 1990 160"/><path class="b" d="M1990 520 C 1800 620, 1650 760, 1760 900 S 1990 980, 2000 1000"/></svg>
+  <div class="faixa"></div>
+  <div class="esq">
+    <div class="rot" id="rot">Instagram IBFE</div>
+    <h1>
+      <span style="-webkit-animation-delay:.45s;animation-delay:.45s">A <em>troca</em></span>
+      <span style="-webkit-animation-delay:.6s;animation-delay:.6s">faz parte</span>
+      <span style="-webkit-animation-delay:.75s;animation-delay:.75s">da nossa</span>
+      <span style="-webkit-animation-delay:.9s;animation-delay:.9s">forma de</span>
+      <span style="-webkit-animation-delay:1.05s;animation-delay:1.05s"><em>aprender</em></span>
+    </h1>
   </div>
-  <div class="arroba"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>@ibferibeirao</div>
+  <div class="qrcard"><div class="qr" id="qr"></div><div class="t"><small id="qrk">Acesse o post</small><b id="qrt">Curta e<br>comente!</b></div></div>
+  <div class="mesa">
+    <div class="pol p3"><div class="fita"></div><div class="ft" id="f3"></div><div class="cap" id="c3"></div></div>
+    <div class="pol p2"><div class="fita"></div><div class="ft" id="f2"></div><div class="cap" id="c2"></div></div>
+    <div class="pol p1"><div class="fita"></div><div class="ft" id="f1"></div><div class="cap" id="c1"></div><div class="novo" id="novo">Post<br>novo!</div></div>
+    <svg class="cora" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 3 4.5 6.7 4.5c2.2 0 3.6 1.2 4.3 2.4.7-1.2 2.1-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.3C19.5 16.4 12 21 12 21z" fill="#fff" stroke="rgba(0,0,0,.12)" stroke-width=".4"/></svg>
+  </div>
+  <div class="base"><div class="t" id="base"><b>@ibferibeirao</b> · Comente, curta e compartilhe</div><img src="../assets/logo_light.png" alt="IBFE"></div>
   <div class="carregando" id="carregando">Carregando…</div>
 </div>
 <script>
 var DIAS_NOVO = 3;
 function $(id){ return document.getElementById(id); }
 function parametro(n){ var m=new RegExp("[?&]"+n+"=([^&]+)").exec(location.search); return m?decodeURIComponent(m[1]):null; }
-function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
 function ajusta(){
   var ws=[window.innerWidth,document.documentElement.clientWidth,screen.width], hs=[window.innerHeight,document.documentElement.clientHeight,screen.height], W=0,H=0,k;
   for(k=0;k<ws.length;k++) if(ws[k]>100&&(!W||ws[k]<W)) W=ws[k];
@@ -87,37 +107,23 @@ function ajusta(){
   t.style.left=Math.max(0,(W-1920*s)/2)+"px"; t.style.top=Math.max(0,(H-1080*s)/2)+"px";
 }
 window.onresize=ajusta; ajusta(); setInterval(ajusta,2000);
-
-/* corações subindo */
-var cv=$("coracoes"), ctx=cv.getContext("2d"), cs=[];
-for(var i=0;i<26;i++) cs.push({x:Math.random()*1920,y:1080+Math.random()*1080,s:14+Math.random()*30,v:0.6+Math.random()*1.4,f:Math.random()*6.28,a:0.15+Math.random()*0.35});
-function coracao(x,y,s){ ctx.beginPath(); ctx.moveTo(x,y+s*0.35); ctx.bezierCurveTo(x,y,x-s*0.5,y,x-s*0.5,y+s*0.35); ctx.bezierCurveTo(x-s*0.5,y+s*0.65,x,y+s*0.8,x,y+s); ctx.bezierCurveTo(x,y+s*0.8,x+s*0.5,y+s*0.65,x+s*0.5,y+s*0.35); ctx.bezierCurveTo(x+s*0.5,y,x,y,x,y+s*0.35); ctx.fill(); }
-var req=window.requestAnimationFrame||window.webkitRequestAnimationFrame||function(f){setTimeout(f,33);};
-function anima(){ ctx.clearRect(0,0,1920,1080);
-  for(var i=0;i<cs.length;i++){ var c=cs[i]; c.y-=c.v; c.f+=0.02; if(c.y<-60){c.y=1100;c.x=Math.random()*1920;}
-    ctx.fillStyle="rgba(255,255,255,"+c.a+")"; coracao(c.x+Math.sin(c.f)*24,c.y,c.s); }
-  req(anima); }
-anima();
-
-function ha(iso){ var h=(new Date()-new Date(iso))/36e5; if(h<1) return "há poucos minutos"; if(h<24) return "há "+Math.floor(h)+"h"; var d=Math.floor(h/24); return d===1?"ontem":"há "+d+" dias"; }
+function ha(iso){ var h=(new Date()-new Date(iso))/36e5; if(h<1) return "agora há pouco"; if(h<24) return "há "+Math.floor(h)+"h"; var d=Math.floor(h/24); return d===1?"ontem":"há "+d+" dias"; }
+function foto(id,p){ var el=$(id); if(p&&p.imagem) el.style.backgroundImage="url('"+p.imagem+"?v="+encodeURIComponent(p.id)+"')"; }
 function pinta(j){
   $("carregando").style.display="none";
-  var p=j.post, novo=p && ((new Date()-new Date(p.data))/864e5 <= DIAS_NOVO);
-  if(p){
-    $("foto").style.backgroundImage=p.imagem?"url('"+p.imagem+"?v="+encodeURIComponent(p.id)+"')":"";
-    var leg=esc(p.legenda).replace(/\n+/g," ");
-    $("leg").innerHTML="<b>ibferibeirao</b> "+(leg.length>150?leg.slice(0,150)+"…":leg);
-  }
+  var ps=j.posts||(j.post?[j.post]:[]), p=ps[0], novo=p&&((new Date()-new Date(p.data))/864e5<=DIAS_NOVO);
+  foto("f1",ps[0]); foto("f2",ps[1]); foto("f3",ps[2]);
+  $("c1").innerHTML=p?(novo?"Post novo · "+ha(p.data):ha(p.data)):"@ibferibeirao";
+  $("c2").innerHTML=ps[1]?ha(ps[1].data):""; $("c3").innerHTML=ps[2]?ha(ps[2].data):"";
   if(novo){
-    $("selo").innerHTML="<i></i>Post novo · "+ha(p.data);
-    $("titulo").innerHTML="Você já curtiu<br><em>nosso post?</em>";
-    $("sub").innerHTML="Tem novidade no nosso Instagram. <b>Passa lá e deixa seu like!</b>";
-    $("qr").innerHTML=p.qr; $("qrt").innerHTML="Curta, comente<br>e compartilhe!"; $("qrs").innerHTML="Aponte a câmera do celular";
+    $("rot").innerHTML="Tem post novo no Instagram";
+    $("qr").innerHTML=p.qr; $("qrk").innerHTML="Acesse o post"; $("qrt").innerHTML="Curta e<br>comente!";
+    $("base").innerHTML="<b>@ibferibeirao</b> · Comente, curta e compartilhe";
   } else {
-    $("selo").innerHTML="<i></i>Instagram";
-    $("titulo").innerHTML="Siga o IBFE<br><em>no Instagram</em>";
-    $("sub").innerHTML="Dicas, novidades dos cursos e bastidores. <b>Fique por dentro!</b>";
-    $("qr").innerHTML=j.qr_perfil; $("qrt").innerHTML="@ibferibeirao"; $("qrs").innerHTML="Aponte a câmera e siga";
+    $("novo").style.display="none";
+    $("rot").innerHTML="Siga o IBFE no Instagram";
+    $("qr").innerHTML=j.qr_perfil; $("qrk").innerHTML="Acesse o perfil"; $("qrt").innerHTML="Siga<br>@ibferibeirao";
+    $("base").innerHTML="<b>@ibferibeirao</b> · Dicas, novidades e bastidores";
   }
 }
 function carrega(){ var x=new XMLHttpRequest(); x.open("GET","post.json?t="+new Date().getTime(),true);

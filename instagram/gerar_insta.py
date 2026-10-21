@@ -13,22 +13,25 @@ saida = {"atualizado": dt.datetime.now(dt.timezone.utc).isoformat(), "perfil": P
 try:
     if not TOKEN or not IG: raise RuntimeError("Faltam os segredos IG_TOKEN e IG_USER_ID no GitHub.")
     campos = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp"
-    url = f"https://graph.facebook.com/v21.0/{IG}/media?fields={campos}&limit=1&access_token={urllib.parse.quote(TOKEN)}"
+    url = f"https://graph.facebook.com/v21.0/{IG}/media?fields={campos}&limit=3&access_token={urllib.parse.quote(TOKEN)}"
     d = json.load(urllib.request.urlopen(url, timeout=30))
     if "error" in d: raise RuntimeError(d["error"].get("message"))
-    p = d["data"][0]
-    img_url = p.get("thumbnail_url") if p.get("media_type") == "VIDEO" else p.get("media_url")
-    arq = None
-    if img_url:
-        urllib.request.urlretrieve(img_url, base / "post.jpg"); arq = "post.jpg"
-    legenda = (p.get("caption") or "").strip()
-    saida["post"] = {"id": p["id"], "tipo": p.get("media_type"), "legenda": legenda[:400], "link": p["permalink"],
-                     "data": p["timestamp"], "imagem": arq, "qr": qr(p["permalink"])}
+    posts = []
+    for n, p in enumerate(d["data"][:3], 1):
+        img_url = p.get("thumbnail_url") if p.get("media_type") == "VIDEO" else p.get("media_url")
+        arq = None
+        if img_url:
+            urllib.request.urlretrieve(img_url, base / f"post{n}.jpg"); arq = f"post{n}.jpg"
+        legenda = (p.get("caption") or "").strip()
+        posts.append({"id": p["id"], "tipo": p.get("media_type"), "legenda": legenda[:400], "link": p["permalink"],
+                      "data": p["timestamp"], "imagem": arq, "qr": qr(p["permalink"])})
+    saida["posts"] = posts
+    saida["post"] = posts[0]
 except Exception as ex:
     saida["erro"] = str(ex)
     try:  # mantém o último post bom se a busca falhar
         antigo = json.load(open(base / "post.json", encoding="utf-8"))
-        saida["post"] = antigo.get("post")
+        saida["post"] = antigo.get("post"); saida["posts"] = antigo.get("posts", [])
     except Exception:
         pass
 json.dump(saida, open(base / "post.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
