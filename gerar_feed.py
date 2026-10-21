@@ -12,11 +12,14 @@ MAX_TOTAL = 18
 BLOQUEIO = ["morto","morta","mortos","mortas","morre","morreu","morte","mata","matou","assassin","homicíd","tiro","baleado",
   "assalt","roub","furt","preso","presa","prisão","prende","polícia","policial","crime","criminos","tráfico","droga",
   "estupr","abuso","violência","agress","esfaque","facada","acidente","tragédia","desastre","queda de avião","réus","réu ",
-  "sequestr","golpe","fraude","corpo","cadáver","incêndio","suicíd","feminicíd","briga"]
-IGNORAR = ["assista ao","ao vivo","vídeo:","video:","veja o vídeo","podcast"]
+  "sequestr","golpe","maus-tratos","maus tratos","jogando saco","abandon","fraude","corpo","cadáver","incêndio","suicíd","feminicíd","briga"]
+IGNORAR = ["assista ao","ao vivo","vídeo:","video:","veja o vídeo","podcast","siga o","bom dia","jornal da","eptv"]
 def adequada(titulo, resumo):
     t = (titulo + " " + resumo).lower()
-    return not any(b in t for b in BLOQUEIO) and not any(titulo.lower().startswith(i) for i in IGNORAR)
+    tl = titulo.lower()
+    if len(titulo.split()) < 5: return False          # nomes de programa ("Bom Dia Cidade")
+    if "vídeo" in tl.split(";")[-1] or tl.endswith("vídeo"): return False
+    return not any(b in t for b in BLOQUEIO) and not any(tl.startswith(i) for i in IGNORAR)
 
 def limpa(txt, n):
     txt = html.unescape(re.sub(r"<[^>]+>", " ", txt or ""))
