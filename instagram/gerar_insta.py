@@ -5,13 +5,13 @@ from pathlib import Path
 import qrcode, qrcode.image.svg
 
 base = Path(__file__).parent
-TOKEN, IG = os.environ.get("IG_TOKEN", "").strip(), os.environ.get("IG_USER_ID", "").strip()
+TOKEN, IG = os.environ.get("IG_TOKEN", "").strip(), (os.environ.get("IG_USER_ID", "").strip() or "17841417264192419")
 PERFIL = "https://www.instagram.com/ibferibeirao/"
 def qr(u):
     b = io.BytesIO(); qrcode.make(u, image_factory=qrcode.image.svg.SvgPathImage, border=1).save(b); return b.getvalue().decode()
 saida = {"atualizado": dt.datetime.now(dt.timezone.utc).isoformat(), "perfil": PERFIL, "qr_perfil": qr(PERFIL), "post": None, "erro": None}
 try:
-    if not TOKEN or not IG: raise RuntimeError("Faltam os segredos IG_TOKEN e IG_USER_ID no GitHub.")
+    if not TOKEN: raise RuntimeError("Falta o segredo IG_TOKEN no GitHub.")
     campos = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp"
     url = f"https://graph.facebook.com/v26.0/{IG}/media?fields={campos}&limit=3&access_token={urllib.parse.quote(TOKEN)}"
     d = json.load(urllib.request.urlopen(url, timeout=30))
