@@ -13,7 +13,7 @@ saida = {"atualizado": dt.datetime.now(dt.timezone.utc).isoformat(), "perfil": P
 try:
     if not TOKEN or not IG: raise RuntimeError("Faltam os segredos IG_TOKEN e IG_USER_ID no GitHub.")
     campos = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp"
-    url = f"https://graph.facebook.com/v21.0/{IG}/media?fields={campos}&limit=3&access_token={urllib.parse.quote(TOKEN)}"
+    url = f"https://graph.facebook.com/v26.0/{IG}/media?fields={campos}&limit=3&access_token={urllib.parse.quote(TOKEN)}"
     d = json.load(urllib.request.urlopen(url, timeout=30))
     if "error" in d: raise RuntimeError(d["error"].get("message"))
     posts = []
