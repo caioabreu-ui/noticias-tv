@@ -125,7 +125,13 @@ function mostra(i){
     t0 = new Date().getTime();
   }, 460);
 }
-function proxima(){ if (!noticias.length) return; idx = (idx + 1) % noticias.length; mostra(idx); }
+/* continua de onde parou na aparição anterior (memória do navegador; se não houver, usa o relógio) */
+var CHAVE = "ibfe_noticias_pos";
+function lePos(){ try { var v = parseInt(localStorage.getItem(CHAVE), 10); if (!isNaN(v)) return v; } catch(e){} return Math.floor(new Date().getTime() / TEMPO); }
+function salvaPos(v){ try { localStorage.setItem(CHAVE, String(v)); } catch(e){} }
+function proxima(){ if (!noticias.length) return;
+  if (idx < 0) idx = lePos() % noticias.length; else idx = (idx + 1) % noticias.length;
+  salvaPos(idx + 1); mostra(idx); }
 setInterval(function(){ var p = Math.min(1, (new Date().getTime() - t0) / TEMPO); $("prog").style.width = (p*100) + "%"; }, 100);
 
 function carrega(){
