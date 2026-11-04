@@ -6,9 +6,6 @@ on:
   push:
     branches: [main]
     paths: ["dicas/dicas.json", "dicas/gerar_dicas.py", ".github/workflows/dicas.yml"]
-concurrency:
-  group: salvar-repositorio
-  cancel-in-progress: false
 permissions:
   contents: write
 jobs:

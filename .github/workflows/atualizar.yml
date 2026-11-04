@@ -6,9 +6,6 @@ on:
   push:
     branches: [main]
     paths: ["gerar_feed.py", "fontes.json", ".github/workflows/**"]
-concurrency:
-  group: salvar-repositorio
-  cancel-in-progress: false
 permissions:
   contents: write
 jobs:

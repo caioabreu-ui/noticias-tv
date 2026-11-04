@@ -6,9 +6,6 @@ on:
   push:
     branches: [main]
     paths: ["instagram/gerar_insta.py", ".github/workflows/instagram.yml"]
-concurrency:
-  group: salvar-repositorio
-  cancel-in-progress: false
 permissions:
   contents: write
 jobs:
