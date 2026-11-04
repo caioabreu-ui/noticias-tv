@@ -6,6 +6,9 @@ on:
   push:
     branches: [main]
     paths: ["instagram/gerar_insta.py", ".github/workflows/instagram.yml"]
+concurrency:
+  group: salvar-repositorio
+  cancel-in-progress: false
 permissions:
   contents: write
 jobs:
@@ -27,5 +30,8 @@ jobs:
           git add instagram/post.json; git add instagram/post*.jpg 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -m "Post do Instagram atualizado"
-          git pull --rebase -X ours origin main
-          git push
+          for i in 1 2 3 4 5; do
+            git pull --rebase -X ours origin main && git push && exit 0
+            echo "Outro robô salvou ao mesmo tempo; tentando de novo em $((i*10))s"; sleep $((i*10))
+          done
+          exit 1
